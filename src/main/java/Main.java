@@ -14,7 +14,10 @@ public class Main extends Application{
     public void start(Stage stage) throws Exception {
         UserService.loadUsersFromFile();
         Parent root = FXMLLoader.load(getClass().getResource("scene.fxml"));
-        Scene scene = new Scene(root);
+        String css = this.getClass().getResource("styles.css").toExternalForm();
+        Scene scene = new Scene(root, 1200, 700);
+        scene.getStylesheets().add(css);
+        stage.setResizable(false);
         stage.setTitle("JavaFX and Gradle");
         stage.setScene(scene);
         stage.show();

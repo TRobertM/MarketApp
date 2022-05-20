@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.text.Text?>
+
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.RegisterController">
+   <children>
+      <Pane layoutX="520.0" layoutY="296.0">
+         <children>
+            <Text id="text" layoutX="51.0" layoutY="81.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PASSWORD" />
+            <Text id="text" layoutX="34.0" layoutY="154.0" strokeType="OUTSIDE" strokeWidth="0.0" text="PASSWORD AGAIN" />
+            <Text id="text" layoutX="68.0" layoutY="228.0" strokeType="OUTSIDE" strokeWidth="0.0" text="ROLE" />
+         </children>
+      </Pane>
+      <ImageView fitHeight="96.0" fitWidth="82.0" layoutX="559.0" layoutY="146.0" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@logo.png" />
+         </image>
+      </ImageView>
+      <TextField fx:id="registerUsernameField" layoutX="513.0" layoutY="315.0" />
+      <PasswordField fx:id="registerPasswordField" layoutX="513.0" layoutY="384.0" />
+      <PasswordField fx:id="registerPasswordAgainField" layoutX="513.0" layoutY="458.0" />
+      <ComboBox id="roleSelector" fx:id="roleSelector" layoutX="513.0" layoutY="533.0" prefWidth="150.0" />
+      <Text id="text" layoutX="569.0" layoutY="307.0" strokeType="OUTSIDE" strokeWidth="0.0" text="USERNAME" wrappingWidth="59.318359374999886" />
+      <Button id="registerButton" fx:id="registerButton" layoutX="551.0" layoutY="591.0" mnemonicParsing="false" onAction="#register" text="Register" />
+   </children>
+</AnchorPane>

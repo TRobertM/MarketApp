@@ -1,0 +1,86 @@
+.root {
+    -fx-background-image: url(background.png);
+    -fx-min-height: 700px;
+    -fx-min-width: 1200px;
+}
+
+.password-field {
+    -fx-background-radius: 20px;
+    -fx-min-width: 175px;
+    -fx-min-height: 30px;
+}
+
+.text-field {
+    -fx-background-radius: 20px;
+    -fx-min-width: 175px;
+    -fx-min-height: 30px;
+}
+
+#roleSelector {
+    -fx-min-width: 175px;
+    -fx-min-height: 30px;
+    -fx-background-color: transparent;
+    -fx-border-style: solid;
+    -fx-border-color: linear-gradient(to right bottom, transparent 10%, #ffffff);
+    -fx-border-radius: 20px;
+}
+
+#usernameLabel {
+    -fx-font-family: "Roboto Bk";
+    -fx-font-weight: 500;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-smoothing-type: gray;
+}
+
+#passwordLabel {
+    -fx-font-family: "Roboto Bk";
+    -fx-font-weight: 500;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-smoothing-type: gray;
+}
+
+#registerLabel {
+    -fx-font-family: "Roboto Light";
+    -fx-text-fill: #c9484d;
+    -fx-font-size: 14px;
+    -fx-font-style: italic;
+    -fx-font-smoothing-type: gray;
+}
+
+#loginButton {
+    -fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-background-radius: 8px;
+    -fx-font-family: Roboto;
+    -fx-min-height: 28px;
+    -fx-min-width: 100px;
+}
+
+#registerButton {
+    -fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-background-radius: 8px;
+    -fx-font-family: Roboto;
+    -fx-min-height: 28px;
+    -fx-min-width: 100px;
+}
+
+#errorText {
+    -fx-fill: red;
+    -fx-font-size: 13px;
+    -fx-font-family: Roboto;
+    -fx-text-alignment: center;
+}
+
+#text {
+    -fx-font-family: "Roboto Bk";
+    -fx-fill: white;
+    -fx-font-weight: 500;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-font-smoothing-type: gray;
+}
