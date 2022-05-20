@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.Pane?>
 <?import javafx.scene.text.Text?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.RegisterController">
+<AnchorPane id="errorText" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.RegisterController">
    <children>
       <Pane layoutX="520.0" layoutY="296.0">
          <children>
@@ -29,6 +29,14 @@
       <PasswordField fx:id="registerPasswordAgainField" layoutX="513.0" layoutY="458.0" />
       <ComboBox id="roleSelector" fx:id="roleSelector" layoutX="513.0" layoutY="533.0" prefWidth="150.0" />
       <Text id="text" layoutX="569.0" layoutY="307.0" strokeType="OUTSIDE" strokeWidth="0.0" text="USERNAME" wrappingWidth="59.318359374999886" />
-      <Button id="registerButton" fx:id="registerButton" layoutX="551.0" layoutY="591.0" mnemonicParsing="false" onAction="#register" text="Register" />
+      <Button id="registerButton" fx:id="registerButton" layoutX="551.0" layoutY="613.0" mnemonicParsing="false" onAction="#register" text="Register" />
+      <Pane fx:id="errorPane" layoutX="-7.0" layoutY="581.0" prefHeight="22.0" prefWidth="1216.0">
+         <children>
+            <Text id="errorText" fx:id="errorText" fill="WHITE" layoutX="3.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="1207.49853515625" />
+         </children>
+      </Pane>
+      <Button id="toolbarButton" layoutX="1166.0" layoutY="8.0" mnemonicParsing="false" onAction="#closeWindow" text="X" fx:id="xButton" />
+      <Button id="toolbarButton" fx:id="minimizeButton" layoutX="1139.0" layoutY="5.0" mnemonicParsing="false" onAction="#minimizeWindow" text="_" />
+      <Button id="toolbarButton" fx:id="backButton" layoutX="14.0" layoutY="10.0" mnemonicParsing="false" onAction="#backWindow" text="&lt;" />
    </children>
 </AnchorPane>

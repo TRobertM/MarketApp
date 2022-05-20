@@ -6,6 +6,7 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -14,6 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import services.DeveloperService;
 import services.UserService;
 
 import javafx.event.ActionEvent;
@@ -35,6 +37,11 @@ public class Controller implements Initializable {
     Text errorText;
     @FXML
     Label goRegisterButton;
+    @FXML
+    Button xButton;
+    @FXML
+    Button minimizeButton;
+
 
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
@@ -61,7 +68,15 @@ public class Controller implements Initializable {
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setResizable(false);
-        } else {
+        }
+        else if(DeveloperService.login(usernameField.getText(), passwordField.getText())){
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("loggedInScene.fxml"));
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+        }
+        else {
             errorText.setText("Wrong username or password");
             errorPane.setVisible(true);
         }
@@ -74,5 +89,15 @@ public class Controller implements Initializable {
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setResizable(false);
+    }
+
+    public void closeWindow(){
+        Stage stage = (Stage) xButton.getScene().getWindow();
+        stage.close();
+    }
+
+    public void minimizeWindow(){
+        Stage stage = (Stage) minimizeButton.getScene().getWindow();
+        stage.setIconified(true);
     }
 }

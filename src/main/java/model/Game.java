@@ -2,13 +2,13 @@ package model;
 
 public class Game {
     String name;
-    String developer;
+    Developer developer;
 
     public Game(){
 
     }
 
-    public Game(String name, String developer){
+    public Game(String name, Developer developer){
         this.name = name;
         this.developer = developer;
     }
@@ -21,11 +21,11 @@ public class Game {
         this.name = name;
     }
 
-    public String getDeveloper(){
+    public Developer getDeveloper(){
         return developer;
     }
 
-    public void setDeveloper(String developer){
+    public void setDeveloper(Developer developer){
         this.developer = developer;
     }
 
@@ -35,6 +35,9 @@ public class Game {
 
     @Override
     public String toString(){
-        return getName() + ", " + getDeveloper();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name=" + getName() + "\n");
+        sb.append("Developer=" + getDeveloper());
+        return sb.toString();
     }
 }

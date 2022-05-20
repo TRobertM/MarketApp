@@ -16,6 +16,23 @@
     -fx-min-height: 30px;
 }
 
+.combo-box .list-cell {
+    -fx-color-label-visible: red;
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+
+.combo-box .list-view {
+    -fx-background-color: #271b55;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover
+{
+    -fx-background-color: #bb32b7;
+    -fx-text-fill: #271b55;
+}
+
 #roleSelector {
     -fx-min-width: 175px;
     -fx-min-height: 30px;
@@ -83,4 +100,11 @@
     -fx-text-fill: white;
     -fx-font-size: 11px;
     -fx-font-smoothing-type: gray;
+}
+
+#toolbarButton {
+    -fx-font-family: Arial;
+    -fx-font-weight: 800;
+    -fx-text-fill: White;
+    -fx-background-color: transparent;
 }

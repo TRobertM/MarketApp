@@ -3,25 +3,23 @@ package model;
 import java.util.ArrayList;
 import java.util.List;
 
-public class User {
+public class Developer {
+    private List<String> orders;
     private String username;
     private String password;
     private String role;
     private List<Game> games;
-    private List<Game> wishlist;
-    private List<Game> cart;
 
-    public User(){
+    public Developer(){
 
     }
 
-    public User(String username, String password, String role){
+    public Developer(String username, String password){
         this.username = username;
         this.password = password;
-        this.role = role;
+        this.role = "Developer";
         this.games = new ArrayList<>();
-        this.wishlist = new ArrayList<>();
-        this.cart = new ArrayList<>();
+        this.orders = new ArrayList<>();
     }
 
     public String getUsername(){
@@ -52,16 +50,12 @@ public class User {
         return games;
     }
 
-    public List<Game> getWishlist(){
-        return wishlist;
-    }
-
-    public List<Game> getCart() {
-        return cart;
+    public List<String> getOrders(){
+        return orders;
     }
 
     public boolean equals(Object o){
-        return (o instanceof User && ((User)o).username.equals(username));
+        return (o instanceof User && ((Developer)o).username.equals(username));
     }
 
     @Override
@@ -70,8 +64,7 @@ public class User {
         sb.append("Username=" + getUsername() + "\n");
         sb.append("Role=" + getRole() + "\n");
         sb.append("Games=" + String.valueOf(getGames()) + "\n");
-        sb.append("Wishlist=" + String.valueOf(getWishlist()) + "\n");
-        sb.append("Cart=" + String.valueOf(getCart()));
+        sb.append("Orders=" + String.valueOf(getOrders()));
         return sb.toString();
     }
 }
