@@ -1,53 +1,78 @@
 package controllers;
 
-import services.UserService;
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
-import javafx.scene.control.Button;
-import javafx.scene.control.ChoiceBox;
+import javafx.scene.Node;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
+import services.UserService;
 
+import javafx.event.ActionEvent;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
 
-public class Controller implements Initializable{
-    @FXML
-    private TextField userField;
-    @FXML
-    private Button regButton;
-    @FXML
-    private PasswordField passwordField;
-    @FXML
-    private ChoiceBox<String> roleField;
-    @FXML
-    private Text loginText;
-    @FXML
-    private Button loginButton;
+import static javafx.scene.effect.BlurType.GAUSSIAN;
 
-    private String[] roles = {"Developer", "Customer"};
+public class Controller implements Initializable {
+
+    @FXML
+    PasswordField passwordField;
+    @FXML
+    TextField usernameField;
+    @FXML
+    Pane errorPane;
+    @FXML
+    Text errorText;
+    @FXML
+    Label goRegisterButton;
 
     @Override
-    public void initialize(URL arg0, ResourceBundle arg1){
-        roleField.getItems().addAll(roles);
+    public void initialize(URL arg0, ResourceBundle arg1) {
+        errorPane.setVisible(false);
+        DropShadow ds = new DropShadow();
+        ds.setColor(Color.valueOf("1d103f"));
+        ds.setSpread(-7.0);
+        ds.setBlurType(GAUSSIAN);
+        ds.setOffsetX(0.0);
+        ds.setOffsetY(9.0);
+        usernameField.setEffect(ds);
+        passwordField.setEffect(ds);
     }
 
-    public void register() throws Exception {
-        if(roleField.getValue() == null){
-            throw new Exception();
+    public void login(ActionEvent e) throws IOException {
+        if (usernameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty()) {
+            errorText.setText("Please fill everything before trying to log in");
+            errorPane.setVisible(true);
+            throw new IOException();
         }
-        try {
-            UserService.addUser(userField.getText() , passwordField.getText() , roleField.getValue());
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (UserService.login(usernameField.getText(), passwordField.getText())) {
+            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("loggedInScene.fxml"));
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
+        } else {
+            errorText.setText("Wrong username or password");
+            errorPane.setVisible(true);
         }
     }
 
-    public void login() {
-        if(UserService.login(userField.getText(), passwordField.getText())){
-            loginText.setText("Logged in!");
-        } else loginText.setText("Username/Password incorrect!");
+    @FXML
+    public void goToRegister() throws IOException {
+        Parent root = FXMLLoader.load((getClass().getClassLoader().getResource("registerScene.fxml")));
+        Stage stage = (Stage)goRegisterButton.getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
     }
 }
