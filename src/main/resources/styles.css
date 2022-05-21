@@ -16,6 +16,23 @@
     -fx-min-height: 30px;
 }
 
+.combo-box .list-cell {
+    -fx-color-label-visible: red;
+    -fx-text-fill: white;
+    -fx-background-color: transparent;
+}
+
+
+.combo-box .list-view {
+    -fx-background-color: #271b55;
+}
+
+.combo-box-popup .list-view .list-cell:filled:hover
+{
+    -fx-background-color: #bb32b7;
+    -fx-text-fill: #271b55;
+}
+
 #roleSelector {
     -fx-min-width: 175px;
     -fx-min-height: 30px;
@@ -69,6 +86,16 @@
     -fx-min-width: 100px;
 }
 
+#logoutButton {
+    -fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);
+    -fx-text-fill: #271b55;
+    -fx-font-size: 11px;
+    -fx-background-radius: 8px;
+    -fx-font-family: Roboto;
+    -fx-min-height: 32px;
+    -fx-min-width: 100px;
+}
+
 #errorText {
     -fx-fill: red;
     -fx-font-size: 13px;
@@ -83,4 +110,22 @@
     -fx-text-fill: white;
     -fx-font-size: 11px;
     -fx-font-smoothing-type: gray;
+}
+
+#toolbarButton {
+    -fx-font-family: Arial;
+    -fx-font-weight: 800;
+    -fx-text-fill: White;
+    -fx-background-color: transparent;
+}
+
+#welcomeLabel {
+    -fx-font-size: 15px;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+    -fx-font-family: "Roboto Light";
+}
+
+#imagePane {
+    -fx-background-radius: 100px;
 }

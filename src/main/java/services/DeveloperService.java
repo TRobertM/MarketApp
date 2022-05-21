@@ -4,9 +4,8 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import exception.CouldNotWriteUsersException;
 import exception.UsernameAlreadyExistsException;
-import model.User;
+import model.Developer;
 import org.apache.commons.io.FileUtils;
-
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
@@ -18,48 +17,48 @@ import java.util.Objects;
 import java.util.ArrayList;
 
 
-public class UserService {
+public class DeveloperService {
 
-    public static List<User> users = new ArrayList<>();
-    private static final Path USERS_PATH = FileSystemService.getPathToFile("config", "users.json");
+    public static List<Developer> developers = new ArrayList<>();
+    private static final Path DEVELOPERS_PATH = FileSystemService.getPathToFile("config", "developers.json");
 
-    public static void addUser(String username, String password, String role) throws UsernameAlreadyExistsException {
+    public static void addUser(String username, String password) throws UsernameAlreadyExistsException {
         checkUserDoesNotAlreadyExist(username);
-        DeveloperService.checkUserDoesNotAlreadyExist(username);
-        users.add(new User(username, encodePassword(username, password), role));
+        UserService.checkUserDoesNotAlreadyExist(username);
+        developers.add(new Developer(username, encodePassword(username, password), "https://dailyhodl.com/wp-content/uploads/2021/12/ross-sells-nft.jpg"));
         persistUsers();
     }
 
     public static void loadUsersFromFile() throws IOException {
-        if (!Files.exists(USERS_PATH)) {
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("uzeri.json"), USERS_PATH.toFile());
+        if (!Files.exists(DEVELOPERS_PATH)) {
+            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("developerz.json"), DEVELOPERS_PATH.toFile());
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
 
-        users = objectMapper.readValue(USERS_PATH.toFile(), new TypeReference<>() {
+        developers = objectMapper.readValue(DEVELOPERS_PATH.toFile(), new TypeReference<>() {
         });
     }
 
     public static void checkUserDoesNotAlreadyExist(String username) throws UsernameAlreadyExistsException {
-        for (User user : users) {
-            if (Objects.equals(username, user.getUsername()))
+        for (Developer developer : developers) {
+            if (Objects.equals(username, developer.getUsername()))
                 throw new UsernameAlreadyExistsException(username);
         }
     }
 
-    private static void persistUsers() {
+    public static void persistUsers() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(USERS_PATH.toFile(), users);
+            objectMapper.writerWithDefaultPrettyPrinter().writeValue(DEVELOPERS_PATH.toFile(), developers);
         } catch (IOException e) {
             throw new CouldNotWriteUsersException();
         }
     }
 
     public static boolean login(String username, String password){
-        for(User user : users){
-            if(username.equals(user.getUsername()) && encodePassword(username, password).equals(user.getPassword())){
+        for(Developer developer : developers){
+            if(username.equals(developer.getUsername()) && encodePassword(username, password).equals(developer.getPassword())){
                 return true;
             }
         }

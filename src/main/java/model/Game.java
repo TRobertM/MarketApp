@@ -35,6 +35,9 @@ public class Game {
 
     @Override
     public String toString(){
-        return getName() + ", " + getDeveloper();
+        StringBuilder sb = new StringBuilder();
+        sb.append("Name=" + getName() + "\n");
+        sb.append("Developer=" + getDeveloper());
+        return sb.toString();
     }
 }
