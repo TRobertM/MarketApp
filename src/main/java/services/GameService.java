@@ -20,7 +20,7 @@ public class GameService {
     public static List<Game> games = new ArrayList<>();
     private static final Path GAMES_PATH = FileSystemService.getPathToFile("config", "games.json");
 
-    public static void addGame(String name, Developer developer) throws GameAlreadyExistsException {
+    public static void addGame(String name, String developer) throws GameAlreadyExistsException {
         checkGameDoesNotAlreadyExist(name);
         games.add(new Game(name, developer));
         persistUsers();

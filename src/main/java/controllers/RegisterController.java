@@ -62,19 +62,19 @@ public class RegisterController implements Initializable {
     public void register() throws Exception {
         if (registerUsernameField.getText().trim().isEmpty() || registerPasswordField.getText().trim().isEmpty() || registerPasswordAgainField.getText().trim().isEmpty()) {
             errorText.setFill(Color.RED);
-            errorText.setText("Please fill everything before trying to log in");
+            errorText.setText("Complete all fields to register");
             errorPane.setVisible(true);
             throw new IOException();
         }
         if(roleSelector.getValue() == null){
             errorText.setFill(Color.RED);
-            errorText.setText("Please select a role!");
+            errorText.setText("Role not selected");
             errorPane.setVisible(true);
             throw new Exception();
         }
         if(!(registerPasswordField.getText().equals(registerPasswordAgainField.getText()))){
             errorText.setFill(Color.RED);
-            errorText.setText("Passwords do not match!");
+            errorText.setText("Passwords do not match");
             errorPane.setVisible(true);
             throw new Exception();
         }

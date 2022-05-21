@@ -1,5 +1,6 @@
 package model;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -9,17 +10,28 @@ public class Developer {
     private String password;
     private String role;
     private List<Game> games;
+    private String profile;
 
     public Developer(){
 
     }
 
-    public Developer(String username, String password){
+    public Developer(Developer dev){
+        this.orders = dev.orders;
+        this.username = dev.username;
+        this.password = dev.password;
+        this.role = dev.role;
+        this.games = dev.games;
+        this.profile = dev.profile;
+    }
+
+    public Developer(String username, String password, String profile){
         this.username = username;
         this.password = password;
         this.role = "Developer";
         this.games = new ArrayList<>();
         this.orders = new ArrayList<>();
+        this.profile = profile;
     }
 
     public String getUsername(){
@@ -54,6 +66,14 @@ public class Developer {
         return orders;
     }
 
+    public void addGame(Game game){
+        this.games.add(game);
+    }
+
+    public String getProfile(){
+        return profile;
+    }
+
     public boolean equals(Object o){
         return (o instanceof User && ((Developer)o).username.equals(username));
     }
@@ -64,6 +84,7 @@ public class Developer {
         sb.append("Username=" + getUsername() + "\n");
         sb.append("Role=" + getRole() + "\n");
         sb.append("Games=" + String.valueOf(getGames()) + "\n");
+        sb.append("Profile=" + getProfile() + "\n");
         sb.append("Orders=" + String.valueOf(getOrders()));
         return sb.toString();
     }

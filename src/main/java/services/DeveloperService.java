@@ -25,7 +25,7 @@ public class DeveloperService {
     public static void addUser(String username, String password) throws UsernameAlreadyExistsException {
         checkUserDoesNotAlreadyExist(username);
         UserService.checkUserDoesNotAlreadyExist(username);
-        developers.add(new Developer(username, encodePassword(username, password)));
+        developers.add(new Developer(username, encodePassword(username, password), "https://dailyhodl.com/wp-content/uploads/2021/12/ross-sells-nft.jpg"));
         persistUsers();
     }
 
@@ -47,7 +47,7 @@ public class DeveloperService {
         }
     }
 
-    private static void persistUsers() {
+    public static void persistUsers() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(DEVELOPERS_PATH.toFile(), developers);

@@ -2,13 +2,13 @@ package model;
 
 public class Game {
     String name;
-    Developer developer;
+    String developer;
 
     public Game(){
 
     }
 
-    public Game(String name, Developer developer){
+    public Game(String name, String developer){
         this.name = name;
         this.developer = developer;
     }
@@ -21,11 +21,11 @@ public class Game {
         this.name = name;
     }
 
-    public Developer getDeveloper(){
+    public String getDeveloper(){
         return developer;
     }
 
-    public void setDeveloper(Developer developer){
+    public void setDeveloper(String developer){
         this.developer = developer;
     }
 

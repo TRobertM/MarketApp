@@ -86,6 +86,16 @@
     -fx-min-width: 100px;
 }
 
+#logoutButton {
+    -fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);
+    -fx-text-fill: #271b55;
+    -fx-font-size: 11px;
+    -fx-background-radius: 8px;
+    -fx-font-family: Roboto;
+    -fx-min-height: 32px;
+    -fx-min-width: 100px;
+}
+
 #errorText {
     -fx-fill: red;
     -fx-font-size: 13px;
@@ -107,4 +117,15 @@
     -fx-font-weight: 800;
     -fx-text-fill: White;
     -fx-background-color: transparent;
+}
+
+#welcomeLabel {
+    -fx-font-size: 15px;
+    -fx-text-alignment: center;
+    -fx-alignment: center;
+    -fx-font-family: "Roboto Light";
+}
+
+#imagePane {
+    -fx-background-radius: 100px;
 }

@@ -15,6 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import model.Developer;
 import services.DeveloperService;
 import services.UserService;
 
@@ -57,20 +58,32 @@ public class Controller implements Initializable {
     }
 
     public void login(ActionEvent e) throws IOException {
+        developerWelcomeController c1 = new developerWelcomeController();
         if (usernameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty()) {
             errorText.setText("Please fill everything before trying to log in");
             errorPane.setVisible(true);
             throw new IOException();
         }
         if (UserService.login(usernameField.getText(), passwordField.getText())) {
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("loggedInScene.fxml"));
-            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setResizable(false);
+            System.out.println("Not implemented yet");
+//            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
+//            Parent root = loader.load();
+//            welcomeController w1 = loader.getController();
+//            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+//            Scene scene = new Scene(root);
+//            stage.setScene(scene);
+//            stage.setResizable(false);
         }
         else if(DeveloperService.login(usernameField.getText(), passwordField.getText())){
-            Parent root = FXMLLoader.load(getClass().getClassLoader().getResource("loggedInScene.fxml"));
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
+            Parent root = loader.load();
+            developerWelcomeController w1 = loader.getController();
+            for(Developer dev : DeveloperService.developers){
+                if(dev.getUsername().equals(usernameField.getText())){
+                    w1.setCurrentDeveloper(dev);
+                    break;
+                }
+            }
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
