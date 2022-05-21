@@ -10,16 +10,16 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Developer;
 import model.Game;
+import model.User;
 import services.DeveloperService;
 import services.GameService;
+import services.UserService;
 
 
 import java.io.IOException;
@@ -36,9 +36,11 @@ public class developerGamesController implements Initializable {
     @FXML
     VBox gameShop;
 
+    // devName is used to store the name of the logged in developer and i is used to know the place of the developer in the developers.json file
     String devName;
     int i;
 
+    // Useless ATM used it for some checks and testing
     @Override
     public void initialize(URL location, ResourceBundle resources){
     }
@@ -53,6 +55,7 @@ public class developerGamesController implements Initializable {
         stage.setIconified(true);
     }
 
+    // Goes back to the main page of the developer
     public void backWindow(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
         Parent root = loader.load();
@@ -64,6 +67,11 @@ public class developerGamesController implements Initializable {
         stage.setResizable(false);
     }
 
+    /*
+    Outdated method name DO NOT EDIT.
+    Method reads all games from current developer and creates a button for each of them. After that it appends all elements
+    into a scrollPane. Also adds some minor hover effects for every item.
+     */
     public void setDevName(String name){
         devName = name;
         try {
@@ -107,6 +115,10 @@ public class developerGamesController implements Initializable {
         }
     }
 
+    /*
+    Method of the button. Upon button click, the method gets the name of the connected game and removes it from the scrollPane,
+    removes it from the list of games, removes it from the developers list of games and removes it from every users list of games
+     */
     private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {
             Pane p = new Pane();
@@ -125,6 +137,12 @@ public class developerGamesController implements Initializable {
             }
             for(Game game : GameService.games){
                 if(game.getName().equals(g)){
+                    for(User user : UserService.users){
+                        if(user.getGames().contains(game)){
+                            user.getGames().remove(game);
+                            UserService.persistUsers();
+                        }
+                    }
                     GameService.games.remove(game);
                     DeveloperService.developers.get(i).getGames().remove(game);
                     GameService.persistUsers();

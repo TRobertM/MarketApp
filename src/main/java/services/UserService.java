@@ -48,7 +48,7 @@ public class UserService {
         }
     }
 
-    private static void persistUsers() {
+    public static void persistUsers() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(USERS_PATH.toFile(), users);

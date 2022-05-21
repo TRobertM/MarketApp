@@ -1,5 +1,6 @@
 package controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -40,6 +41,7 @@ public class developerWelcomeController implements Initializable {
     Button logoutButton;
     Developer currentDeveloper;
 
+    // Again no use as of right now but DO NOT TOUCH
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -55,6 +57,7 @@ public class developerWelcomeController implements Initializable {
         stage.setIconified(true);
     }
 
+    // Works as a logout button
     @FXML
     public void goBack() throws IOException {
         Parent root = FXMLLoader.load((getClass().getClassLoader().getResource("scene.fxml")));
@@ -64,6 +67,7 @@ public class developerWelcomeController implements Initializable {
         stage.setResizable(false);
     }
 
+    // Changes window to developer library window
     public void goToGames(MouseEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerGames.fxml"));
         Parent root = loader.load();
@@ -75,11 +79,25 @@ public class developerWelcomeController implements Initializable {
         stage.setResizable(false);
     }
 
+    public void addGame(MouseEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerAdd.fxml"));
+        Parent root = loader.load();
+        developerAddController a1 = loader.getController();
+        a1.setDev(currentDeveloper);
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+    }
+
+    // Used by previous controller to send information to this controller
     public void setCurrentDeveloper(Developer developer){
         currentDeveloper = new Developer(developer);
         welcomeLabel.setText("Welcome, " + currentDeveloper.getUsername());
     }
 
+    // Everything below this is implemented only for design purposes
     public void myGamesHover(){
         ((Text)myGames.getChildren().get(1)).setText(" G A M E S >");
     }

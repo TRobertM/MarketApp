@@ -44,6 +44,7 @@ public class RegisterController implements Initializable {
 
     private String[] roles = {null ,"Developer", "Customer"};
 
+    // Added design
     @Override
     public void initialize(URL arg0, ResourceBundle arg1) {
         errorPane.setVisible(false);
@@ -59,6 +60,8 @@ public class RegisterController implements Initializable {
         registerPasswordAgainField.setEffect(ds);
     }
 
+    // Checks that every field is completed, checks that role is selected and lastly verifies
+    // User can create both developer and customer accounts with the same name this is KNOWN and will be fixed
     public void register() throws Exception {
         if (registerUsernameField.getText().trim().isEmpty() || registerPasswordField.getText().trim().isEmpty() || registerPasswordAgainField.getText().trim().isEmpty()) {
             errorText.setFill(Color.RED);

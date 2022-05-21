@@ -42,7 +42,7 @@
             </Text>
          </children>
       </TextFlow>
-      <TextFlow fx:id="addGame" layoutX="547.0" layoutY="392.0" onMouseEntered="#addGameHover" onMouseExited="#addGameExit" prefHeight="17.0" prefWidth="106.0" textAlignment="CENTER">
+      <TextFlow fx:id="addGame" layoutX="547.0" layoutY="392.0" onMouseClicked="#addGame" onMouseEntered="#addGameHover" onMouseExited="#addGameExit" prefHeight="17.0" prefWidth="106.0" textAlignment="CENTER">
          <children>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="A D D" textAlignment="CENTER">
                <font>
