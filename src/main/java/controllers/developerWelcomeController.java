@@ -6,18 +6,19 @@ import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import model.Developer;
+import services.DeveloperService;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 
 public class developerWelcomeController implements Initializable {
 
@@ -52,13 +53,23 @@ public class developerWelcomeController implements Initializable {
     public void minimizeWindow(){
         Stage stage = (Stage) minimizeButton.getScene().getWindow();
         stage.setIconified(true);
-        System.out.println(currentDeveloper.getUsername());
     }
 
     @FXML
     public void goBack() throws IOException {
         Parent root = FXMLLoader.load((getClass().getClassLoader().getResource("scene.fxml")));
         Stage stage = (Stage)logoutButton.getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
+    }
+
+    public void goToGames(MouseEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerGames.fxml"));
+        Parent root = loader.load();
+        developerGamesController w1 = loader.getController();
+        w1.setDevName(currentDeveloper.getUsername());
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setResizable(false);

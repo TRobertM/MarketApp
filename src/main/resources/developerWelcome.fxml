@@ -23,12 +23,12 @@
             <Image url="@logo.png" />
          </image>
       </ImageView>
-      <ImageView fitHeight="11.0" fitWidth="117.0" layoutX="14.0" layoutY="676.0" pickOnBounds="true" preserveRatio="true">
+      <ImageView fitHeight="14.0" fitWidth="117.0" layoutX="11.0" layoutY="676.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@devaccount.png" />
          </image>
       </ImageView>
-      <TextFlow fx:id="myGames" layoutX="547.0" layoutY="330.0" onMouseEntered="#myGamesHover" onMouseExited="#myGamesExit" prefHeight="17.0" prefWidth="106.0" textAlignment="CENTER">
+      <TextFlow fx:id="myGames" layoutX="547.0" layoutY="330.0" onMouseClicked="#goToGames" onMouseEntered="#myGamesHover" onMouseExited="#myGamesExit" prefHeight="17.0" prefWidth="106.0" textAlignment="CENTER">
          <children>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="M Y " textAlignment="CENTER">
                <font>

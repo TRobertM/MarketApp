@@ -129,3 +129,40 @@
 #imagePane {
     -fx-background-radius: 100px;
 }
+
+.scroll-pane{
+    -fx-background-color:transparent;
+}
+
+.scroll-pane .viewport {
+    -fx-background-color:transparent;
+}
+
+.scroll-pane .text {
+    -fx-fill: white;
+}
+
+.scroll-pane .button {
+    -fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);
+    -fx-fill: #271b55;
+    -fx-font-size: 11px;
+    -fx-background-radius: 50px;
+    -fx-font-family: Roboto;
+    -fx-min-height: 20px;
+    -fx-min-width: 20px;
+}
+
+.scroll-bar:vertical{
+    -fx-background-color:transparent;
+}
+
+.scroll-bar:vertical .thumb{
+    -fx-background-color: white;
+    -fx-max-width: 5px;
+    -fx-background-radius: 50px;
+}
+
+.scroll-bar:vertical *.increment-button,
+.scroll-bar:vertical *.decrement-button{
+    -fx-background-color: transparent;
+}

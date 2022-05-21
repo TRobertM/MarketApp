@@ -44,7 +44,7 @@ public class GameService {
         }
     }
 
-    private static void persistUsers() {
+    public static void persistUsers() {
         try {
             ObjectMapper objectMapper = new ObjectMapper();
             objectMapper.writerWithDefaultPrettyPrinter().writeValue(GAMES_PATH.toFile(), games);
