@@ -96,6 +96,16 @@
     -fx-min-width: 100px;
 }
 
+#orderButton {
+    -fx-background-color: linear-gradient(to right bottom, #6af49e, #4dd787);
+    -fx-text-fill: #271b55;
+    -fx-font-size: 11px;
+    -fx-background-radius: 8px;
+    -fx-font-family: Roboto;
+    -fx-min-height: 28px;
+    -fx-min-width: 100px;
+}
+
 #errorText {
     -fx-fill: red;
     -fx-font-size: 13px;

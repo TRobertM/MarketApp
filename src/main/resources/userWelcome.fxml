@@ -47,7 +47,7 @@
       <Button id="logoutButton" fx:id="logoutButton" layoutX="550.0" layoutY="568.0" mnemonicParsing="false" onAction="#logoutUser" text="LOGOUT" />
       <Button id="toolbarButton" fx:id="closeButton" layoutX="1166.0" layoutY="8.0" mnemonicParsing="false" onAction="#closeWindow" text="X" />
       <Button id="toolbarButton" fx:id="minimizeButton" layoutX="1139.0" layoutY="6.0" mnemonicParsing="false" onAction="#minimizeWindow" text="_" />
-      <TextFlow fx:id="myGames" layoutX="519.0" layoutY="482.0" onMouseEntered="#myGamesHover" onMouseExited="#myGamesExit" prefHeight="33.0" prefWidth="162.0" textAlignment="CENTER">
+      <TextFlow fx:id="myGames" layoutX="519.0" layoutY="482.0" onMouseClicked="#goToGames" onMouseEntered="#myGamesHover" onMouseExited="#myGamesExit" prefHeight="33.0" prefWidth="162.0" textAlignment="CENTER">
          <children>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="M Y" textAlignment="CENTER">
                <font>
@@ -62,5 +62,10 @@
          </children>
       </TextFlow>
       <Label fx:id="welcomeLabel" layoutX="-8.0" layoutY="237.0" prefHeight="19.0" prefWidth="1216.0" text="Label" textFill="WHITE" />
+      <ImageView fitHeight="23.0" fitWidth="63.0" layoutX="1120.0" layoutY="38.0" onMouseClicked="#goToCart" pickOnBounds="true" preserveRatio="true">
+         <image>
+            <Image url="@cartButton.png" />
+         </image>
+      </ImageView>
    </children>
 </AnchorPane>

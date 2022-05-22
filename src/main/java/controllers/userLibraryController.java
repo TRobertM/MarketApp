@@ -63,7 +63,10 @@ public class userLibraryController {
             if(UserService.users.get(i).getWishlist().contains(game)){
                 continue;
             }
-            else if(UserService.users.get(i).getCart().contains(game)){
+            if(UserService.users.get(i).getCart().contains(game)){
+                continue;
+            }
+            if(UserService.users.get(i).getGames().contains(game)){
                 continue;
             }
             else{

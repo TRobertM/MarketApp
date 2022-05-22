@@ -1,11 +1,10 @@
 package model;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
 public class Developer {
-    private List<String> orders;
+    private List<Order> orders;
     private String username;
     private String password;
     private String role;
@@ -62,7 +61,7 @@ public class Developer {
         return games;
     }
 
-    public List<String> getOrders(){
+    public List<Order> getOrders(){
         return orders;
     }
 
