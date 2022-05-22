@@ -140,9 +140,15 @@ public class developerGamesController implements Initializable {
                     for(User user : UserService.users){
                         if(user.getGames().contains(game)){
                             user.getGames().remove(game);
-                            UserService.persistUsers();
+                        }
+                        if(user.getWishlist().contains(game)){
+                            user.getWishlist().remove(game);
+                        }
+                        if(user.getCart().contains(game)){
+                            user.getCart().remove(game);
                         }
                     }
+                    UserService.persistUsers();
                     GameService.games.remove(game);
                     DeveloperService.developers.get(i).getGames().remove(game);
                     GameService.persistUsers();

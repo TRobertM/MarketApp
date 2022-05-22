@@ -72,14 +72,14 @@ public class Controller implements Initializable {
 
         // If the user trying to log in is a customer, log him in and send him to the customer main page
         if (UserService.login(usernameField.getText(), passwordField.getText())) {
-            System.out.println("Not implemented yet");
-//            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
-//            Parent root = loader.load();
-//            welcomeController w1 = loader.getController();
-//            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-//            Scene scene = new Scene(root);
-//            stage.setScene(scene);
-//            stage.setResizable(false);
+            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
+            Parent root = loader.load();
+            userWelcomeController userWelcome = loader.getController();
+            userWelcome.setDev(usernameField.getText());
+            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+            Scene scene = new Scene(root);
+            stage.setScene(scene);
+            stage.setResizable(false);
         }
 
         // If the user is a developer, log him into the developer main page and send to the developer main page information about the developer that just logged in
