@@ -11,6 +11,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
@@ -44,7 +45,9 @@ public class Controller implements Initializable {
     Button minimizeButton;
 
 
+
     @Override
+    // Initialize some added effects on the elements
     public void initialize(URL arg0, ResourceBundle arg1) {
         errorPane.setVisible(false);
         DropShadow ds = new DropShadow();
@@ -57,13 +60,17 @@ public class Controller implements Initializable {
         passwordField.setEffect(ds);
     }
 
+
+    // Login method
     public void login(ActionEvent e) throws IOException {
-        developerWelcomeController c1 = new developerWelcomeController();
+        // Check if the fields are empty and modify errorText accordingly.
         if (usernameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty()) {
             errorText.setText("Please fill everything before trying to log in");
             errorPane.setVisible(true);
             throw new IOException();
         }
+
+        // If the user trying to log in is a customer, log him in and send him to the customer main page
         if (UserService.login(usernameField.getText(), passwordField.getText())) {
             System.out.println("Not implemented yet");
 //            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
@@ -74,6 +81,8 @@ public class Controller implements Initializable {
 //            stage.setScene(scene);
 //            stage.setResizable(false);
         }
+
+        // If the user is a developer, log him into the developer main page and send to the developer main page information about the developer that just logged in
         else if(DeveloperService.login(usernameField.getText(), passwordField.getText())){
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
             Parent root = loader.load();
@@ -89,12 +98,16 @@ public class Controller implements Initializable {
             stage.setScene(scene);
             stage.setResizable(false);
         }
+
+        // If the user is not found in any file it means the username or password are wrong
         else {
             errorText.setText("Wrong username or password");
             errorPane.setVisible(true);
         }
     }
 
+
+    // Changes tab to register
     @FXML
     public void goToRegister() throws IOException {
         Parent root = FXMLLoader.load((getClass().getClassLoader().getResource("registerScene.fxml")));
@@ -104,11 +117,13 @@ public class Controller implements Initializable {
         stage.setResizable(false);
     }
 
+    // Closes window
     public void closeWindow(){
         Stage stage = (Stage) xButton.getScene().getWindow();
         stage.close();
     }
 
+    // Minimize window
     public void minimizeWindow(){
         Stage stage = (Stage) minimizeButton.getScene().getWindow();
         stage.setIconified(true);

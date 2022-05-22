@@ -1,4 +1,5 @@
 import javafx.event.EventHandler;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.StageStyle;
 import model.Developer;
@@ -45,6 +46,7 @@ public class Main extends Application{
         stage.setTitle("JavaFX and Gradle");
         stage.initStyle(StageStyle.UNDECORATED);
         stage.setScene(scene);
+        stage.getIcons().add(new Image("logo.png"));
         stage.show();
     }
 }

@@ -1,23 +1,25 @@
 package controllers;
 
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.*;
-import javafx.scene.layout.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.Label;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import model.Developer;
+import services.DeveloperService;
 
-import java.awt.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-
 
 public class developerWelcomeController implements Initializable {
 
@@ -39,6 +41,7 @@ public class developerWelcomeController implements Initializable {
     Button logoutButton;
     Developer currentDeveloper;
 
+    // Again no use as of right now but DO NOT TOUCH
     @Override
     public void initialize(URL location, ResourceBundle resources) {
 
@@ -52,9 +55,9 @@ public class developerWelcomeController implements Initializable {
     public void minimizeWindow(){
         Stage stage = (Stage) minimizeButton.getScene().getWindow();
         stage.setIconified(true);
-        System.out.println(currentDeveloper.getUsername());
     }
 
+    // Works as a logout button
     @FXML
     public void goBack() throws IOException {
         Parent root = FXMLLoader.load((getClass().getClassLoader().getResource("scene.fxml")));
@@ -64,11 +67,37 @@ public class developerWelcomeController implements Initializable {
         stage.setResizable(false);
     }
 
+    // Changes window to developer library window
+    public void goToGames(MouseEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerGames.fxml"));
+        Parent root = loader.load();
+        developerGamesController w1 = loader.getController();
+        w1.setDevName(currentDeveloper.getUsername());
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
+    }
+
+    public void addGame(MouseEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerAdd.fxml"));
+        Parent root = loader.load();
+        developerAddController a1 = loader.getController();
+        a1.setDev(currentDeveloper);
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+    }
+
+    // Used by previous controller to send information to this controller
     public void setCurrentDeveloper(Developer developer){
         currentDeveloper = new Developer(developer);
         welcomeLabel.setText("Welcome, " + currentDeveloper.getUsername());
     }
 
+    // Everything below this is implemented only for design purposes
     public void myGamesHover(){
         ((Text)myGames.getChildren().get(1)).setText(" G A M E S >");
     }
