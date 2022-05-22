@@ -30,7 +30,7 @@ public class userWelcomeController {
     Button minimizeButton;
     @FXML
     Label welcomeLabel;
-    String currentDev;
+    String currentUser;
 
     public void logoutUser(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("scene.fxml"));
@@ -53,14 +53,25 @@ public class userWelcomeController {
 
     public void setDev(String name){
         welcomeLabel.setText("Welcome, " + name);
-        currentDev = name;
+        currentUser = name;
     }
 
     public void goToLibrary(MouseEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userLibrary.fxml"));
         Parent root = loader.load();
         userLibraryController u1 = loader.getController();
-        u1.setUser(currentDev);
+        u1.setUser(currentUser);
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
+    }
+
+    public void goToWishlist(MouseEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWishlist.fxml"));
+        Parent root = loader.load();
+        userWishlistController uw = loader.getController();
+        uw.setUser(currentUser);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
