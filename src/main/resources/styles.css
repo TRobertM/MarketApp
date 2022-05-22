@@ -166,3 +166,9 @@
 .scroll-bar:vertical *.decrement-button{
     -fx-background-color: transparent;
 }
+
+#addGameButton {
+    -fx-background-radius: 30px;
+    -fx-background-color: linear-gradient(to right bottom, #6af49e, #4dd787);
+    -fx-max-height: 25px;
+}
