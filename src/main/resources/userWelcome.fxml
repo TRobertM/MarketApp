@@ -30,7 +30,7 @@
             </Text>
          </children>
       </TextFlow>
-      <TextFlow fx:id="myWishlist" layoutX="533.0" layoutY="409.0" onMouseEntered="#myWishlistHover" onMouseExited="#myWishlistExit" prefHeight="17.0" prefWidth="135.0" textAlignment="CENTER">
+      <TextFlow fx:id="myWishlist" layoutX="533.0" layoutY="409.0" onMouseClicked="#goToWishlist" onMouseEntered="#myWishlistHover" onMouseExited="#myWishlistExit" prefHeight="17.0" prefWidth="135.0" textAlignment="CENTER">
          <children>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="M Y" textAlignment="CENTER">
                <font>

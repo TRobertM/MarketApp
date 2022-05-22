@@ -17,7 +17,6 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Game;
 import model.User;
-import services.DeveloperService;
 import services.GameService;
 import services.UserService;
 
@@ -80,7 +79,7 @@ public class userLibraryController {
                         g.setStyle("-fx-background-color:#160e36;");
                         Button b = new Button();
                         b.setGraphic(view);
-                        b.setOnAction(addWishlist);
+                        b.setOnAction(addCart);
                         b.setStyle("-fx-background-color: linear-gradient(to right bottom, #6af49e, #4dd787);");
                         b.relocate(590, 8.5);
                         g.getChildren().add(b);
@@ -91,7 +90,7 @@ public class userLibraryController {
                         view2.setFitWidth(15.0);
                         Button b2 = new Button();
                         b2.setGraphic(view2);
-                        b2.setOnAction(addCart);
+                        b2.setOnAction(addWishlist);
                         b2.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);");
                         b2.relocate(550,8.5);
                         g.getChildren().add(b2);
