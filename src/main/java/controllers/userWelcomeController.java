@@ -78,6 +78,28 @@ public class userWelcomeController {
         stage.setResizable(false);
     }
 
+    public void goToGames(MouseEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userGames.fxml"));
+        Parent root = loader.load();
+        userGamesController ug = loader.getController();
+        ug.setUser(currentUser);
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
+    }
+
+    public void goToCart(MouseEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userCart.fxml"));
+        Parent root = loader.load();
+        userCartController uc = loader.getController();
+        uc.setUser(currentUser);
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
+    }
+
     // ------------------------------------------------- Everything below this is implemented only for design purposes -----------------------------------------------------
     public void gamesLibraryHover(){
         ((Text)gamesLibrary.getChildren().get(1)).setText(" L I B R A R Y >");

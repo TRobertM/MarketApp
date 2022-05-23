@@ -9,63 +9,52 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Game;
 import model.User;
+import services.DeveloperService;
 import services.GameService;
 import services.UserService;
 
 import java.io.IOException;
 
-public class userWishlistController {
-    @FXML
-    VBox gameShop;
+public class userGamesController {
     @FXML
     Button closeButton;
     @FXML
     Button minimizeButton;
     @FXML
     Button backButton;
-    String userName;
-    int i;
+    @FXML
+    VBox myGames;
 
-    public void setUser(String name) {
+    int i;
+    String userName;
+
+
+    public void setUser(String name){
         userName = name;
-        for (User user : UserService.users) {
-            if (user.getUsername().equals(userName)) {
+        for(User user : UserService.users){
+            if(user.getUsername().equals(userName)){
                 break;
             }
             i++;
         }
-        for (Game game : GameService.games) {
-            if (UserService.users.get(i).getWishlist().contains(game)) {
+        for(Game game : DeveloperService.developers.get(i).getGames()){
+            if(UserService.users.get(i).getGames().contains(game)) {
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
                     @Override
                     public void handle(MouseEvent t) {
-                        Image img = new Image("cart.png");
-                        ImageView view = new ImageView(img);
-                        view.setFitWidth(15.0);
-                        view.setFitHeight(15.0);
                         g.setStyle("-fx-background-color:#160e36;");
-                        Button b = new Button();
-                        b.setGraphic(view);
-                        b.setOnAction(addCart);
-                        b.setStyle("-fx-background-color: linear-gradient(to right bottom, #6af49e, #4dd787);");
+                        Button b = new Button("X");
+                        b.setOnAction(removeGame);
                         b.relocate(590, 8.5);
                         g.getChildren().add(b);
-
-                        Button b2 = new Button("X");
-                        b2.setOnAction(removeCart);
-                        b2.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);");
-                        b2.relocate(550,8.5);
-                        g.getChildren().add(b2);
                     }
                 });
                 g.setOnMouseExited(new EventHandler<MouseEvent>() {
@@ -74,7 +63,6 @@ public class userWishlistController {
                     public void handle(MouseEvent t) {
                         g.setStyle("-fx-background-color:transparent;");
                         g.getChildren().remove(1);
-                        g.getChildren().remove(1);
                     }
                 });
                 g.setMinHeight(40);
@@ -82,23 +70,22 @@ public class userWishlistController {
                 Label n = new Label(game.getName());
                 n.relocate(10, 12);
                 g.getChildren().add(n);
-                gameShop.getChildren().add(g);
+                myGames.getChildren().add(g);
             }
         }
     }
 
-    private EventHandler<ActionEvent> addCart = new EventHandler<>() {
+    private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {
             Pane p = new Pane();
             String g = "";
-            int j = 0;
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
                     for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
                         if(node instanceof Label){
                             g += ((Label) node).getText();
                             p = (Pane)node.getParent();
-                            gameShop.getChildren().remove(p);
+                            myGames.getChildren().remove(p);
                             break;
                         }
                     }
@@ -106,41 +93,11 @@ public class userWishlistController {
             }
             for(Game game : GameService.games){
                 if(game.getName().equals(g)){
+                    UserService.users.get(i).getGames().remove(game);
+                    UserService.persistUsers();
                     break;
                 }
-                j++;
             }
-            UserService.users.get(i).getWishlist().remove(GameService.games.get(j));
-            UserService.users.get(i).getCart().add(GameService.games.get(j));
-            UserService.persistUsers();
-        }
-    };
-
-    private EventHandler<ActionEvent> removeCart = new EventHandler<>() {
-        public void handle(ActionEvent event) {
-            Pane p = new Pane();
-            String g = "";
-            int j = 0;
-            if(event.getSource() instanceof Button){
-                if(((Button) event.getSource()).getParent() instanceof Pane){
-                    for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
-                        if(node instanceof Label){
-                            g += ((Label) node).getText();
-                            p = (Pane)node.getParent();
-                            gameShop.getChildren().remove(p);
-                            break;
-                        }
-                    }
-                }
-            }
-            for(Game game : GameService.games){
-                if(game.getName().equals(g)){
-                    break;
-                }
-                j++;
-            }
-            UserService.users.get(i).getWishlist().remove(GameService.games.get(j));
-            UserService.persistUsers();
         }
     };
 
@@ -164,5 +121,4 @@ public class userWishlistController {
         stage.setScene(scene);
         stage.setResizable(false);
     }
-
 }

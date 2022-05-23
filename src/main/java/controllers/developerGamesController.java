@@ -60,7 +60,11 @@ public class developerGamesController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
         Parent root = loader.load();
         developerWelcomeController w1 = loader.getController();
-        w1.setCurrentDeveloper(DeveloperService.developers.get(0));
+        for(Developer dev : DeveloperService.developers){
+            if(dev.getUsername().equals(devName)){
+                w1.setCurrentDeveloper(dev);
+            }
+        }
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);

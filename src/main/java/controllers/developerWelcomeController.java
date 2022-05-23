@@ -91,6 +91,18 @@ public class developerWelcomeController implements Initializable {
         stage.show();
     }
 
+    public void goToOrders(MouseEvent e) throws IOException {
+        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerOrders.fxml"));
+        Parent root = loader.load();
+        developerOrdersController a2 = loader.getController();
+        a2.setDev(currentDeveloper.getUsername());
+        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
+        Scene scene = new Scene(root);
+        stage.setScene(scene);
+        stage.setResizable(false);
+        stage.show();
+    }
+
     // Used by previous controller to send information to this controller
     public void setCurrentDeveloper(Developer developer){
         currentDeveloper = new Developer(developer);
