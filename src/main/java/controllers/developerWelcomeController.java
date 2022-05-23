@@ -15,6 +15,7 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import model.Developer;
+import model.Order;
 import services.DeveloperService;
 
 import java.io.IOException;
@@ -39,12 +40,13 @@ public class developerWelcomeController implements Initializable {
     TextFlow addGame;
     @FXML
     Button logoutButton;
+    @FXML
+    Pane notificationPane;
     Developer currentDeveloper;
 
     // Again no use as of right now but DO NOT TOUCH
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-
     }
 
     public void closeWindow(){
@@ -107,6 +109,15 @@ public class developerWelcomeController implements Initializable {
     public void setCurrentDeveloper(Developer developer){
         currentDeveloper = new Developer(developer);
         welcomeLabel.setText("Welcome, " + currentDeveloper.getUsername());
+        if(!(currentDeveloper.getOrders().isEmpty())){
+            int orders = 0;
+            for(Order order : currentDeveloper.getOrders()){
+                orders++;
+            }
+            Button notificationButton = new Button(String.valueOf(orders));
+            notificationButton.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);-fx-background-radius: 50px; -fx-text-fill: white");
+            notificationPane.getChildren().add(notificationButton);
+        }
     }
 
     // Everything below this is implemented only for design purposes

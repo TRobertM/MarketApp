@@ -35,6 +35,8 @@ public class developerGamesController implements Initializable {
     Button backButton;
     @FXML
     VBox gameShop;
+    @FXML
+    Pane warningPane;
 
     // devName is used to store the name of the logged in developer and i is used to know the place of the developer in the developers.json file
     String devName;
@@ -43,6 +45,7 @@ public class developerGamesController implements Initializable {
     // Useless ATM used it for some checks and testing
     @Override
     public void initialize(URL location, ResourceBundle resources){
+        warningPane.setVisible(false);
     }
 
     public void closeWindow(){
@@ -125,39 +128,44 @@ public class developerGamesController implements Initializable {
      */
     private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
-            String g = "";
-            if(event.getSource() instanceof Button){
-                if(((Button) event.getSource()).getParent() instanceof Pane){
-                    for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
-                        if(node instanceof Label){
-                            g += ((Label) node).getText();
-                            p = (Pane)node.getParent();
-                            gameShop.getChildren().remove(p);
-                            break;
+            if(!(DeveloperService.developers.get(i).getOrders().isEmpty())){
+                warningPane.setVisible(true);
+            }
+            else {
+                Pane p = new Pane();
+                String g = "";
+                if (event.getSource() instanceof Button) {
+                    if (((Button) event.getSource()).getParent() instanceof Pane) {
+                        for (Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()) {
+                            if (node instanceof Label) {
+                                g += ((Label) node).getText();
+                                p = (Pane) node.getParent();
+                                gameShop.getChildren().remove(p);
+                                break;
+                            }
                         }
                     }
                 }
-            }
-            for(Game game : GameService.games){
-                if(game.getName().equals(g)){
-                    for(User user : UserService.users){
-                        if(user.getGames().contains(game)){
-                            user.getGames().remove(game);
+                for (Game game : GameService.games) {
+                    if (game.getName().equals(g)) {
+                        for (User user : UserService.users) {
+                            if (user.getGames().contains(game)) {
+                                user.getGames().remove(game);
+                            }
+                            if (user.getWishlist().contains(game)) {
+                                user.getWishlist().remove(game);
+                            }
+                            if (user.getCart().contains(game)) {
+                                user.getCart().remove(game);
+                            }
                         }
-                        if(user.getWishlist().contains(game)){
-                            user.getWishlist().remove(game);
-                        }
-                        if(user.getCart().contains(game)){
-                            user.getCart().remove(game);
-                        }
+                        UserService.persistUsers();
+                        GameService.games.remove(game);
+                        DeveloperService.developers.get(i).getGames().remove(game);
+                        GameService.persistUsers();
+                        DeveloperService.persistUsers();
+                        break;
                     }
-                    UserService.persistUsers();
-                    GameService.games.remove(game);
-                    DeveloperService.developers.get(i).getGames().remove(game);
-                    GameService.persistUsers();
-                    DeveloperService.persistUsers();
-                    break;
                 }
             }
         }
