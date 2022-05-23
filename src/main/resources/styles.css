@@ -4,6 +4,10 @@
     -fx-min-width: 1200px;
 }
 
+#answerTab {
+    -fx-background-image: url(answerBackground.png);
+}
+
 .password-field {
     -fx-background-radius: 20px;
     -fx-min-width: 175px;

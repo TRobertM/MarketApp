@@ -56,7 +56,7 @@
             </Text>
          </children>
       </TextFlow>
-      <TextFlow fx:id="myOrders" layoutX="535.0" layoutY="457.0" onMouseEntered="#myOrdersHover" onMouseExited="#myOrdersExit" prefHeight="17.0" prefWidth="130.0" textAlignment="CENTER">
+      <TextFlow fx:id="myOrders" layoutX="535.0" layoutY="457.0" onMouseClicked="#goToOrders" onMouseEntered="#myOrdersHover" onMouseExited="#myOrdersExit" prefHeight="17.0" prefWidth="130.0" textAlignment="CENTER">
          <children>
             <Text fill="WHITE" strokeType="OUTSIDE" strokeWidth="0.0" text="M Y" textAlignment="CENTER">
                <font>
