@@ -26,15 +26,16 @@ public class GameService {
         persistUsers();
     }
 
-    public static void loadUsersFromFile() throws IOException {
+    public static boolean loadgamesfromfile() throws IOException {
         if (!Files.exists(GAMES_PATH)) {
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("uzeri.json"), GAMES_PATH.toFile());
+            FileUtils.copyURLToFile(GameService.class.getClassLoader().getResource("gamez.json"), GAMES_PATH.toFile());
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         games = objectMapper.readValue(GAMES_PATH.toFile(), new TypeReference<>() {
         });
+        return true;
     }
 
     private static void checkGameDoesNotAlreadyExist(String name) throws GameAlreadyExistsException {

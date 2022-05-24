@@ -46,9 +46,9 @@ public class developerAddController {
         this.deve = dev;
     }
 
-    public boolean add() throws GameAlreadyExistsException, IOException {
+    public void add() throws GameAlreadyExistsException, IOException {
         String gm = gameNameLabel.getText();
-        GameService.loadUsersFromFile();
+        GameService.loadgamesfromfile();
         for(Developer dev : DeveloperService.developers){
             if(dev.getUsername().equals(deve.getUsername())){
                 break;
@@ -60,7 +60,7 @@ public class developerAddController {
             initialPane.setVisible(false);
             approvedPane.setVisible(false);
             declinePane.setVisible(true);
-            return false;
+            throw new IOException();
         }
         for(Game game : GameService.games){
             if(game.getName().equals(gm)){
@@ -68,7 +68,7 @@ public class developerAddController {
                 approvedPane.setVisible(false);
                 initialPane.setVisible(false);
                 declinePane.setVisible(true);
-                return false;
+                throw new GameAlreadyExistsException(game.getName());
             }
         }
         approvedText.setText("Game added successfully");
@@ -80,7 +80,6 @@ public class developerAddController {
         DeveloperService.developers.get(i).addGame(bufferGame);
         GameService.persistUsers();
         DeveloperService.persistUsers();
-        return false;
     }
 
     public void goBack(ActionEvent e) throws IOException {

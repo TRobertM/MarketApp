@@ -22,22 +22,24 @@ public class DeveloperService {
     public static List<Developer> developers = new ArrayList<>();
     private static final Path DEVELOPERS_PATH = FileSystemService.getPathToFile("config", "developers.json");
 
-    public static void addUser(String username, String password) throws UsernameAlreadyExistsException {
+    public static boolean addUser(String username, String password) throws UsernameAlreadyExistsException {
         checkUserDoesNotAlreadyExist(username);
         UserService.checkUserDoesNotAlreadyExist(username);
-        developers.add(new Developer(username, encodePassword(username, password), "https://dailyhodl.com/wp-content/uploads/2021/12/ross-sells-nft.jpg"));
+        developers.add(new Developer(username, encodePassword(username, password)));
         persistUsers();
+        return true;
     }
 
-    public static void loadUsersFromFile() throws IOException {
+    public static boolean loadDevelopersFromFile() throws IOException {
         if (!Files.exists(DEVELOPERS_PATH)) {
-            FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("developerz.json"), DEVELOPERS_PATH.toFile());
+            FileUtils.copyURLToFile(DeveloperService.class.getClassLoader().getResource("developerz.json"), DEVELOPERS_PATH.toFile());
         }
 
         ObjectMapper objectMapper = new ObjectMapper();
 
         developers = objectMapper.readValue(DEVELOPERS_PATH.toFile(), new TypeReference<>() {
         });
+        return true;
     }
 
     public static void checkUserDoesNotAlreadyExist(String username) throws UsernameAlreadyExistsException {
@@ -65,7 +67,7 @@ public class DeveloperService {
         return false;
     }
 
-    private static String encodePassword(String salt, String password) {
+    public static String encodePassword(String salt, String password) {
         MessageDigest md = getMessageDigest();
         md.update(salt.getBytes(StandardCharsets.UTF_8));
 

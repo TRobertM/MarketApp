@@ -49,7 +49,7 @@ public class userLibraryController {
         userName = name;
         try {
             UserService.loadUsersFromFile();
-            GameService.loadUsersFromFile();
+            GameService.loadgamesfromfile();
         } catch (IOException e) {
             e.printStackTrace();
         }
