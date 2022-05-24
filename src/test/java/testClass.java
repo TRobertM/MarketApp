@@ -13,7 +13,9 @@ public class testClass  {
     @Test
     void testLogin(){
         try {
-            DeveloperService.addUser("Andy","alumnix");
+            assertTrue(DeveloperService.addUser("Andy","alumnix"));
+            ///assertTrue(DeveloperService.addUser("Andy","cicici"));
+            ///UsernameAlreadyExistsException succesfullly thrown from Login!
         } catch (UsernameAlreadyExistsException e) {
             e.printStackTrace();
         }
@@ -22,8 +24,7 @@ public class testClass  {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Assertions.assertTrue(DeveloperService.login("Andy","alumnix"));
-        System.out.println("Login succesful.");
+        assertTrue(DeveloperService.login("Andy","alumnix"));
        /// if(DeveloperService.login("Andy","alumnix"))
           ///  System.out.println("Login succesful");
         ///else
@@ -32,8 +33,9 @@ public class testClass  {
     @Test
     void testDeveloperRegister() {
         try {
-            DeveloperService.addUser("Robi","DND");
-            System.out.println("Developer registered succesfully.");
+            assertTrue(DeveloperService.addUser("Robi","DND"));
+           /// assertTrue(DeveloperService.addUser("Robi","DND"));
+           ///UsernameAlreadyExistException succesfully thrown from DeveloperRegister!
         } catch (UsernameAlreadyExistsException e) {
             e.printStackTrace();
         }
@@ -46,8 +48,9 @@ public class testClass  {
     @Test
     void testCustomerRegister() {
         try {
-            UserService.addUser("Arrokuda","Cuda","customer");
-            System.out.println("Customer registered succesfully.");
+            assertTrue(UserService.addUser("Arrokuda","Cuda","customer"));
+           //// assertTrue(UserService.addUser("Arrokuda","Cuda","Customer"));
+            ///UsernameAlreadyExistsException  succesfully thrown for CustomerRegister!
         } catch (UsernameAlreadyExistsException e) {
             e.printStackTrace();
         }
