@@ -16,6 +16,7 @@ repositories {
 
 test {
     useJUnitPlatform()
+    enableAssertions = true
 }
 
 dependencies {

@@ -82,7 +82,7 @@ public class developerGamesController implements Initializable {
     public void setDevName(String name){
         devName = name;
         try {
-            GameService.loadUsersFromFile();
+            GameService.loadgamesfromfile();
         } catch (IOException e) {
             e.printStackTrace();
         }

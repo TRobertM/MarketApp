@@ -31,7 +31,7 @@ public class userGamesController {
     @FXML
     VBox myGames;
 
-    int i;
+    int i = 0;
     String userName;
 
 
@@ -43,34 +43,36 @@ public class userGamesController {
             }
             i++;
         }
-        for(Game game : DeveloperService.developers.get(i).getGames()){
-            if(UserService.users.get(i).getGames().contains(game)) {
-                Pane g = new Pane();
-                g.setOnMouseEntered(new EventHandler<MouseEvent>() {
+        if(!GameService.games.isEmpty()) {
+            for (Game game : DeveloperService.developers.get(i).getGames()) {
+                if (UserService.users.get(i).getGames().contains(game)) {
+                    Pane g = new Pane();
+                    g.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
-                    @Override
-                    public void handle(MouseEvent t) {
-                        g.setStyle("-fx-background-color:#160e36;");
-                        Button b = new Button("X");
-                        b.setOnAction(removeGame);
-                        b.relocate(590, 8.5);
-                        g.getChildren().add(b);
-                    }
-                });
-                g.setOnMouseExited(new EventHandler<MouseEvent>() {
+                        @Override
+                        public void handle(MouseEvent t) {
+                            g.setStyle("-fx-background-color:#160e36;");
+                            Button b = new Button("X");
+                            b.setOnAction(removeGame);
+                            b.relocate(590, 8.5);
+                            g.getChildren().add(b);
+                        }
+                    });
+                    g.setOnMouseExited(new EventHandler<MouseEvent>() {
 
-                    @Override
-                    public void handle(MouseEvent t) {
-                        g.setStyle("-fx-background-color:transparent;");
-                        g.getChildren().remove(1);
-                    }
-                });
-                g.setMinHeight(40);
-                g.setMinWidth(528);
-                Label n = new Label(game.getName());
-                n.relocate(10, 12);
-                g.getChildren().add(n);
-                myGames.getChildren().add(g);
+                        @Override
+                        public void handle(MouseEvent t) {
+                            g.setStyle("-fx-background-color:transparent;");
+                            g.getChildren().remove(1);
+                        }
+                    });
+                    g.setMinHeight(40);
+                    g.setMinWidth(528);
+                    Label n = new Label(game.getName());
+                    n.relocate(10, 12);
+                    g.getChildren().add(n);
+                    myGames.getChildren().add(g);
+                }
             }
         }
     }

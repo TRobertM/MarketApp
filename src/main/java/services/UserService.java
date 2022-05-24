@@ -23,14 +23,15 @@ public class UserService {
     public static List<User> users = new ArrayList<>();
     private static final Path USERS_PATH = FileSystemService.getPathToFile("config", "users.json");
 
-    public static void addUser(String username, String password, String role) throws UsernameAlreadyExistsException {
+    public static boolean addUser(String username, String password, String role) throws UsernameAlreadyExistsException {
         checkUserDoesNotAlreadyExist(username);
         DeveloperService.checkUserDoesNotAlreadyExist(username);
         users.add(new User(username, encodePassword(username, password), role));
         persistUsers();
+        return true;
     }
 
-    public static void loadUsersFromFile() throws IOException {
+    public static boolean loadUsersFromFile() throws IOException {
         if (!Files.exists(USERS_PATH)) {
             FileUtils.copyURLToFile(UserService.class.getClassLoader().getResource("uzeri.json"), USERS_PATH.toFile());
         }
@@ -39,6 +40,7 @@ public class UserService {
 
         users = objectMapper.readValue(USERS_PATH.toFile(), new TypeReference<>() {
         });
+        return true;
     }
 
     public static void checkUserDoesNotAlreadyExist(String username) throws UsernameAlreadyExistsException {

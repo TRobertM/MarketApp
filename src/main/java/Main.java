@@ -2,7 +2,6 @@ import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.StageStyle;
-import model.Developer;
 import services.DeveloperService;
 import services.GameService;
 import services.UserService;
@@ -23,8 +22,8 @@ public class Main extends Application{
     @Override
     public void start(Stage stage) throws Exception {
         UserService.loadUsersFromFile();
-        DeveloperService.loadUsersFromFile();
-        GameService.loadUsersFromFile();
+        DeveloperService.loadDevelopersFromFile();
+        GameService.loadgamesfromfile();
         Parent root = FXMLLoader.load(getClass().getResource("scene.fxml"));
         String css = this.getClass().getResource("styles.css").toExternalForm();
         Scene scene = new Scene(root, 1200, 700);

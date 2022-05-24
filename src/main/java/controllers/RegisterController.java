@@ -1,5 +1,6 @@
 package controllers;
 
+import exception.UsernameAlreadyExistsException;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -87,11 +88,11 @@ public class RegisterController implements Initializable {
                 errorText.setText("Registered successfully");
                 errorText.setFill(Color.GREEN);
                 errorPane.setVisible(true);
-            } catch (Exception e) {
+            } catch (UsernameAlreadyExistsException e) {
                 errorText.setFill(Color.RED);
                 errorText.setText("Account with given name already exists");
                 errorPane.setVisible(true);
-                e.printStackTrace();
+                System.out.println(e);
             }
         } else {
             try {
@@ -99,11 +100,11 @@ public class RegisterController implements Initializable {
                 errorText.setText("Registered successfully");
                 errorText.setFill(Color.GREEN);
                 errorPane.setVisible(true);
-            } catch (Exception e) {
+            } catch (UsernameAlreadyExistsException e) {
                 errorText.setFill(Color.RED);
                 errorText.setText("Account with given name already exists");
                 errorPane.setVisible(true);
-                e.printStackTrace();
+                System.out.println(e);
             }
         }
     }
