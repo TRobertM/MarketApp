@@ -17,6 +17,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Developer;
+import model.User;
 import services.DeveloperService;
 import services.UserService;
 
@@ -87,12 +88,12 @@ public class Controller implements Initializable {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
             Parent root = loader.load();
             developerWelcomeController w1 = loader.getController();
-            for(Developer dev : DeveloperService.developers){
-                if(dev.getUsername().equals(usernameField.getText())){
-                    w1.setCurrentDeveloper(dev);
-                    break;
-                }
-            }
+//            for(Developer dev : DeveloperService.developers){
+//                if(dev.getUsername().equals(usernameField.getText())){
+            w1.setCurrentDeveloper(usernameField.getText());
+//                    break;
+//                }
+//            }
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);

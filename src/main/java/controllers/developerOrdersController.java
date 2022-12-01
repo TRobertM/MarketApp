@@ -52,7 +52,7 @@ public class developerOrdersController {
         developerWelcomeController w1 = loader.getController();
         for(Developer dev : DeveloperService.developers){
             if(dev.getUsername().equals(devName)){
-                w1.setCurrentDeveloper(dev);
+                //w1.setCurrentDeveloper(dev);
             }
         }
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();

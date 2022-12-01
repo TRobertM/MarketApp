@@ -24,6 +24,10 @@ import services.UserService;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 
 public class developerGamesController implements Initializable {
@@ -63,11 +67,7 @@ public class developerGamesController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
         Parent root = loader.load();
         developerWelcomeController w1 = loader.getController();
-        for(Developer dev : DeveloperService.developers){
-            if(dev.getUsername().equals(devName)){
-                w1.setCurrentDeveloper(dev);
-            }
-        }
+        w1.setCurrentDeveloper(devName);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -92,7 +92,11 @@ public class developerGamesController implements Initializable {
             }
             i++;
         }
-        for(Game game : DeveloperService.developers.get(i).getGames()){
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
+            Statement check_games = connection.createStatement();
+            ResultSet all_games = check_games.executeQuery("SELECT name FROM games WHERE developer = '" + devName + "'");
+            while(all_games.next()){
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
@@ -115,10 +119,13 @@ public class developerGamesController implements Initializable {
                 });
                 g.setMinHeight(40);
                 g.setMinWidth(528);
-                Label n = new Label(game.getName());
+                Label n = new Label(all_games.getString(1));
                 n.relocate(10, 12);
                 g.getChildren().add(n);
                 gameShop.getChildren().add(g);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -128,45 +135,36 @@ public class developerGamesController implements Initializable {
      */
     private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            if(!(DeveloperService.developers.get(i).getOrders().isEmpty())){
-                warningPane.setVisible(true);
-            }
-            else {
-                Pane p = new Pane();
-                String g = "";
-                if (event.getSource() instanceof Button) {
-                    if (((Button) event.getSource()).getParent() instanceof Pane) {
-                        for (Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()) {
-                            if (node instanceof Label) {
-                                g += ((Label) node).getText();
-                                p = (Pane) node.getParent();
-                                gameShop.getChildren().remove(p);
-                                break;
+            try {
+                Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
+                Statement delete_game = connection.createStatement();
+                Statement verify_orders = connection.createStatement();
+                ResultSet orders = verify_orders.executeQuery("SELECT id FROM orders WHERE seller = '" + devName + "'");
+                if (orders.next()) {
+                    warningPane.setVisible(true);
+                    verify_orders.close();
+                    orders.close();
+                } else {
+                    Pane p;
+                    String g = "";
+                    if (event.getSource() instanceof Button) {
+                        if (((Button) event.getSource()).getParent() instanceof Pane) {
+                            for (Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()) {
+                                if (node instanceof Label) {
+                                    g += ((Label) node).getText();
+                                    p = (Pane) node.getParent();
+                                    gameShop.getChildren().remove(p);
+                                    break;
+                                }
                             }
                         }
                     }
+                    delete_game.executeUpdate("DELETE FROM games WHERE name = '" + g + "'");
+                    delete_game.close();
                 }
-                for (Game game : GameService.games) {
-                    if (game.getName().equals(g)) {
-                        for (User user : UserService.users) {
-                            if (user.getGames().contains(game)) {
-                                user.getGames().remove(game);
-                            }
-                            if (user.getWishlist().contains(game)) {
-                                user.getWishlist().remove(game);
-                            }
-                            if (user.getCart().contains(game)) {
-                                user.getCart().remove(game);
-                            }
-                        }
-                        UserService.persistUsers();
-                        GameService.games.remove(game);
-                        DeveloperService.developers.get(i).getGames().remove(game);
-                        GameService.persistUsers();
-                        DeveloperService.persistUsers();
-                        break;
-                    }
-                }
+                connection.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     };

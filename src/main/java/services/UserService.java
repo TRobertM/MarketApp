@@ -13,6 +13,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 import java.util.ArrayList;
@@ -60,12 +64,33 @@ public class UserService {
     }
 
     public static boolean login(String username, String password){
-        for(User user : users){
-            if(username.equals(user.getUsername()) && encodePassword(username, password).equals(user.getPassword())){
-                return true;
+        boolean check = false;
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
+            Statement check_users = connection.createStatement();
+            ResultSet users_information = check_users.executeQuery("SELECT username, password, role FROM users");
+            while(users_information.next()){
+                if(username.equals(users_information.getString(1))
+                        && encodePassword(username, password).equals(users_information.getString(2))
+                        && users_information.getString(3).equals("Customer")){
+                    check = true;
+                    connection.close();
+                    users_information.close();
+                    return check;
+                } else {
+                    check = false;
+                }
             }
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        return false;
+        return check;
+//        for(User user : users){
+//            if(username.equals(user.getUsername()) && encodePassword(username, password).equals(user.getPassword())){
+//                return true;
+//            }
+//        }
+//        return false;
     }
 
     private static String encodePassword(String salt, String password) {

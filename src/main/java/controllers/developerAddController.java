@@ -19,9 +19,9 @@ import services.DeveloperService;
 import services.GameService;
 
 import java.io.IOException;
+import java.sql.*;
 
 public class developerAddController {
-    Developer deve;
     @FXML
     Button addGameButton;
     @FXML
@@ -41,20 +41,15 @@ public class developerAddController {
     @FXML
     Text declineText;
     int i;
+    String currentDeveloper;
 
-    public void setDev(Developer dev){
-        this.deve = dev;
+    public void setDev(String dev){
+        currentDeveloper = dev;
     }
 
     public void add() throws GameAlreadyExistsException, IOException {
-        String gm = gameNameLabel.getText();
-        GameService.loadgamesfromfile();
-        for(Developer dev : DeveloperService.developers){
-            if(dev.getUsername().equals(deve.getUsername())){
-                break;
-            }
-            i++;
-        }
+        String game_name = gameNameLabel.getText();
+        //GameService.loadgamesfromfile();
         if(gameNameLabel.getText().trim().isEmpty()){
             declineText.setText("Invalid name");
             initialPane.setVisible(false);
@@ -62,31 +57,55 @@ public class developerAddController {
             declinePane.setVisible(true);
             throw new IOException();
         }
-        for(Game game : GameService.games){
-            if(game.getName().equals(gm)){
-                declineText.setText("Game already exists");
-                approvedPane.setVisible(false);
-                initialPane.setVisible(false);
-                declinePane.setVisible(true);
-                throw new GameAlreadyExistsException(game.getName());
+        try{
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
+            Statement get_games = connection.createStatement();
+            ResultSet all_games = get_games.executeQuery("SELECT name FROM games");
+            while(all_games.next()){
+                if(all_games.getString(1).equals(game_name)){
+                    declineText.setText("Game already exists");
+                    approvedPane.setVisible(false);
+                    initialPane.setVisible(false);
+                    declinePane.setVisible(true);
+                    get_games.close();
+                    all_games.close();
+                    throw new GameAlreadyExistsException(game_name);
+                }
             }
+            String query = "INSERT INTO games VALUES(?,?,?)";
+            PreparedStatement add_game = connection.prepareStatement(query);
+            PreparedStatement games_sequence = connection.prepareStatement("SELECT nextval('games_sq')");
+            ResultSet sequence_number = games_sequence.executeQuery();
+            if(sequence_number.next()){
+                int ID = sequence_number.getInt(1);
+                add_game.setInt(1, ID);
+            }
+            add_game.setString(2, game_name);
+            add_game.setString(3, currentDeveloper);
+            add_game.executeUpdate();
+            approvedText.setText("Game added successfully");
+            initialPane.setVisible(false);
+            declinePane.setVisible(false);
+            approvedPane.setVisible(true);
+            connection.close();
+            add_game.close();
+            games_sequence.close();
+            sequence_number.close();
         }
-        approvedText.setText("Game added successfully");
-        initialPane.setVisible(false);
-        declinePane.setVisible(false);
-        approvedPane.setVisible(true);
-        Game bufferGame = new Game(gm, DeveloperService.developers.get(i).getUsername());
-        GameService.addGame(gm, DeveloperService.developers.get(i).getUsername());
-        DeveloperService.developers.get(i).addGame(bufferGame);
-        GameService.persistUsers();
-        DeveloperService.persistUsers();
+        catch (GameAlreadyExistsException e){
+            e.printStackTrace();
+        }
+        catch (Exception e){
+            //e.printStackTrace();
+        }
+
     }
 
     public void goBack(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
         Parent root = loader.load();
         developerWelcomeController w1 = loader.getController();
-        w1.setCurrentDeveloper(deve);
+        w1.setCurrentDeveloper(currentDeveloper);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);

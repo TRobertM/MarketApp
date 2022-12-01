@@ -20,6 +20,10 @@ import services.DeveloperService;
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 
 public class developerWelcomeController implements Initializable {
@@ -42,11 +46,34 @@ public class developerWelcomeController implements Initializable {
     Button logoutButton;
     @FXML
     Pane notificationPane;
-    Developer currentDeveloper;
+    String currentDeveloper;
 
     // Again no use as of right now but DO NOT TOUCH
     @Override
     public void initialize(URL location, ResourceBundle resources) {
+    }
+
+    public void setCurrentDeveloper(String developer){
+        currentDeveloper = developer;
+        welcomeLabel.setText("Welcome, " + currentDeveloper);
+        int totalOrders = 0;
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
+            Statement check_orders = connection.createStatement();
+            ResultSet orders_information = check_orders.executeQuery("SELECT id FROM orders WHERE seller = '" + currentDeveloper + "'");
+            while(orders_information.next()){
+                totalOrders++;
+            }
+            connection.close();
+            check_orders.close();
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        if(totalOrders != 0){
+            Button notificationButton = new Button(String.valueOf(totalOrders));
+            notificationButton.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);-fx-background-radius: 50px; -fx-text-fill: white");
+            notificationPane.getChildren().add(notificationButton);
+        }
     }
 
     public void closeWindow(){
@@ -74,7 +101,7 @@ public class developerWelcomeController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerGames.fxml"));
         Parent root = loader.load();
         developerGamesController w1 = loader.getController();
-        w1.setDevName(currentDeveloper.getUsername());
+        w1.setDevName(currentDeveloper);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -97,27 +124,12 @@ public class developerWelcomeController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerOrders.fxml"));
         Parent root = loader.load();
         developerOrdersController a2 = loader.getController();
-        a2.setDev(currentDeveloper.getUsername());
+        //a2.setDev(currentDeveloper.getUsername());
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
         stage.setResizable(false);
         stage.show();
-    }
-
-    // Used by previous controller to send information to this controller
-    public void setCurrentDeveloper(Developer developer){
-        currentDeveloper = new Developer(developer);
-        welcomeLabel.setText("Welcome, " + currentDeveloper.getUsername());
-        if(!(currentDeveloper.getOrders().isEmpty())){
-            int orders = 0;
-            for(Order order : currentDeveloper.getOrders()){
-                orders++;
-            }
-            Button notificationButton = new Button(String.valueOf(orders));
-            notificationButton.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);-fx-background-radius: 50px; -fx-text-fill: white");
-            notificationPane.getChildren().add(notificationButton);
-        }
     }
 
     // Everything below this is implemented only for design purposes
