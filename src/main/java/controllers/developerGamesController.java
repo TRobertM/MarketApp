@@ -82,17 +82,6 @@ public class developerGamesController implements Initializable {
     public void setDevName(String name){
         devName = name;
         try {
-            GameService.loadgamesfromfile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for(Developer dev : DeveloperService.developers){
-            if(dev.getUsername().equals(devName)){
-                break;
-            }
-            i++;
-        }
-        try {
             Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
             Statement check_games = connection.createStatement();
             ResultSet all_games = check_games.executeQuery("SELECT name FROM games WHERE developer = '" + devName + "'");
@@ -124,6 +113,9 @@ public class developerGamesController implements Initializable {
                 g.getChildren().add(n);
                 gameShop.getChildren().add(g);
             }
+            connection.close();
+            check_games.close();
+            all_games.close();
         } catch (Exception e){
             e.printStackTrace();
         }

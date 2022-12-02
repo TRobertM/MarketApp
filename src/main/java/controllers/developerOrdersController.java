@@ -22,6 +22,10 @@ import services.GameService;
 import services.UserService;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class developerOrdersController {
     @FXML
@@ -50,11 +54,7 @@ public class developerOrdersController {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
         Parent root = loader.load();
         developerWelcomeController w1 = loader.getController();
-        for(Developer dev : DeveloperService.developers){
-            if(dev.getUsername().equals(devName)){
-                //w1.setCurrentDeveloper(dev);
-            }
-        }
+        w1.setCurrentDeveloper(devName);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -63,13 +63,11 @@ public class developerOrdersController {
 
     public void setDev(String name){
         devName = name;
-        for(Developer dev : DeveloperService.developers){
-            if(dev.getUsername().equals(devName)){
-                break;
-            }
-            i++;
-        }
-        for(Order order : DeveloperService.developers.get(i).getOrders()){
+        try {
+            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
+            Statement check_orders = connection.createStatement();
+            ResultSet all_orders = check_orders.executeQuery("SELECT id, game, buyer FROM orders WHERE seller = '" + devName + "'");
+            while(all_orders.next()) {
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
@@ -92,31 +90,37 @@ public class developerOrdersController {
                     @Override
                     public void handle(MouseEvent t) {
                         g.setStyle("-fx-background-color:transparent;");
-                        g.getChildren().remove(2);
-                        g.getChildren().remove(2);
+                        g.getChildren().remove(3);
+                        g.getChildren().remove(3);
                     }
                 });
                 g.setMinHeight(40);
                 g.setMinWidth(528);
-                Label u = new Label(order.getGameName());
-                u.relocate(10, 12);
+                Label id = new Label(Integer.toString(all_orders.getInt(1)));
+                Label u = new Label(all_orders.getString(2));
+                u.relocate(25, 12);
+                id.relocate(5, 12.25);
+                g.getChildren().add(id);
                 g.getChildren().add(u);
-                Label gam = new Label("Order from: " + order.getCustomerName());
-                gam.relocate(155, 12);
+                Label gam = new Label("Order from: " + all_orders.getString(3));
+                gam.relocate(200, 12);
                 g.getChildren().add(gam);
                 allOrders.getChildren().add(g);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     private EventHandler<ActionEvent> declineOrder = new EventHandler<>() {
         public void handle(ActionEvent event) {
             Pane p = new Pane();
-            String g = "";
+            int id = 0;
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
                     for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
                         if(node instanceof Label){
-                            g += ((Label) node).getText();
+                            id += Integer.valueOf(((Label) node).getText());
                             p = (Pane)node.getParent();
                             allOrders.getChildren().remove(p);
                             break;
@@ -124,12 +128,14 @@ public class developerOrdersController {
                     }
                 }
             }
-            for(Order order : DeveloperService.developers.get(i).getOrders()){
-                if(order.getGameName().equals(g)){
-                    DeveloperService.developers.get(i).getOrders().remove(order);
-                    DeveloperService.persistUsers();
-                    break;
-                }
+            try{
+                Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
+                Statement check_order = connection.createStatement();
+                check_order.executeUpdate("DELETE FROM orders WHERE id = '" + id + "'");
+                connection.close();
+                check_order.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     };
@@ -137,14 +143,12 @@ public class developerOrdersController {
     private EventHandler<ActionEvent> acceptOrder = new EventHandler<>() {
         public void handle(ActionEvent event) {
             Pane p = new Pane();
-            String g = "";
-            int gamePos = 0;
-            String userN = "";
+            int id = 0;
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
                     for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
                         if(node instanceof Label){
-                            g += ((Label) node).getText();
+                            id += Integer.valueOf(((Label)node).getText());
                             p = (Pane)node.getParent();
                             allOrders.getChildren().remove(p);
                             break;
@@ -152,25 +156,20 @@ public class developerOrdersController {
                     }
                 }
             }
-            for(Order order : DeveloperService.developers.get(i).getOrders()){
-                if(order.getGameName().equals(g)){
-                    DeveloperService.developers.get(i).getOrders().remove(order);
-                    userN += order.getCustomerName();
-                    DeveloperService.persistUsers();
-                    break;
+            try{
+                Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
+                Statement accept_order = connection.createStatement();
+                ResultSet order_id = accept_order.executeQuery("SELECT game , buyer , seller FROM orders WHERE id = '" + id + "'");
+                if(order_id.next()){
+                    accept_order.executeUpdate("INSERT INTO owned (name, developer, owner) VALUES ('" + order_id.getString(1) + "', '"
+                                                + order_id.getString(3) + "', '" + order_id.getString(2) + "')");
+                    accept_order.executeUpdate("DELETE FROM orders WHERE id = '" + id + "'");
                 }
-            }
-            for(Game game : GameService.games){
-                if(game.getName().equals(g)){
-                    break;
-                }
-                gamePos++;
-            }
-            for(User user : UserService.users){
-                if(user.getUsername().equals(userN)){
-                    user.getGames().add(GameService.games.get(gamePos));
-                    UserService.persistUsers();
-                }
+                connection.close();
+                accept_order.close();
+                order_id.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     };

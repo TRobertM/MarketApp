@@ -124,7 +124,7 @@ public class developerWelcomeController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerOrders.fxml"));
         Parent root = loader.load();
         developerOrdersController a2 = loader.getController();
-        //a2.setDev(currentDeveloper.getUsername());
+        a2.setDev(currentDeveloper);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
