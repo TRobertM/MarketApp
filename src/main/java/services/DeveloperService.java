@@ -65,15 +65,16 @@ public class DeveloperService {
     public static boolean login(String username, String password){
         boolean check = false;
         try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-            Statement check_users = connection.createStatement();
+            Connection con = ConnectionService.Connect();
+            Statement check_users = con.createStatement();
             ResultSet users_information = check_users.executeQuery("SELECT username, password, role FROM users");
             while(users_information.next()){
                 if(username.equals(users_information.getString(1))
                         && encodePassword(username, password).equals(users_information.getString(2))
                         && users_information.getString(3).equals("Developer")){
                     check = true;
-                    connection.close();
+                    con.close();
+                    check_users.close();
                     users_information.close();
                     return check;
                 } else {
@@ -94,7 +95,7 @@ public class DeveloperService {
 
         // This is the way a password should be encoded when checking the credentials
         return new String(hashedPassword, StandardCharsets.UTF_8)
-                .replace("\"", ""); //to be able to save in JSON format
+                .replace("\u0000", ""); //to be able to save in JSON format
     }
 
     private static MessageDigest getMessageDigest() {

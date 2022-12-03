@@ -17,6 +17,7 @@ import model.Developer;
 import model.Game;
 import model.Order;
 import model.User;
+import services.ConnectionService;
 import services.DeveloperService;
 import services.GameService;
 import services.UserService;
@@ -64,8 +65,8 @@ public class developerOrdersController {
     public void setDev(String name){
         devName = name;
         try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-            Statement check_orders = connection.createStatement();
+            Connection con = ConnectionService.Connect();
+            Statement check_orders = con.createStatement();
             ResultSet all_orders = check_orders.executeQuery("SELECT id, game, buyer FROM orders WHERE seller = '" + devName + "'");
             while(all_orders.next()) {
                 Pane g = new Pane();
@@ -107,6 +108,9 @@ public class developerOrdersController {
                 g.getChildren().add(gam);
                 allOrders.getChildren().add(g);
             }
+            con.close();
+            check_orders.close();
+            all_orders.close();
         } catch (Exception e){
             e.printStackTrace();
         }
@@ -129,10 +133,10 @@ public class developerOrdersController {
                 }
             }
             try{
-                Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-                Statement check_order = connection.createStatement();
+                Connection con = ConnectionService.Connect();
+                Statement check_order = con.createStatement();
                 check_order.executeUpdate("DELETE FROM orders WHERE id = '" + id + "'");
-                connection.close();
+                con.close();
                 check_order.close();
             } catch (Exception e){
                 e.printStackTrace();
@@ -157,15 +161,15 @@ public class developerOrdersController {
                 }
             }
             try{
-                Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-                Statement accept_order = connection.createStatement();
+                Connection con = ConnectionService.Connect();
+                Statement accept_order = con.createStatement();
                 ResultSet order_id = accept_order.executeQuery("SELECT game , buyer , seller FROM orders WHERE id = '" + id + "'");
                 if(order_id.next()){
                     accept_order.executeUpdate("INSERT INTO owned (name, developer, owner) VALUES ('" + order_id.getString(1) + "', '"
                                                 + order_id.getString(3) + "', '" + order_id.getString(2) + "')");
                     accept_order.executeUpdate("DELETE FROM orders WHERE id = '" + id + "'");
                 }
-                connection.close();
+                con.close();
                 accept_order.close();
                 order_id.close();
             } catch (Exception e){

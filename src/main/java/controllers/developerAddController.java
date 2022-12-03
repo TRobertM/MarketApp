@@ -15,11 +15,14 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.Developer;
 import model.Game;
+import services.ConnectionService;
 import services.DeveloperService;
 import services.GameService;
 
 import java.io.IOException;
+import java.io.InputStream;
 import java.sql.*;
+import java.util.Properties;
 
 public class developerAddController {
     @FXML
@@ -49,7 +52,6 @@ public class developerAddController {
 
     public void add() throws GameAlreadyExistsException, IOException {
         String game_name = gameNameLabel.getText();
-        //GameService.loadgamesfromfile();
         if(gameNameLabel.getText().trim().isEmpty()){
             declineText.setText("Invalid name");
             initialPane.setVisible(false);
@@ -58,8 +60,8 @@ public class developerAddController {
             throw new IOException();
         }
         try{
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-            Statement get_games = connection.createStatement();
+            Connection con = ConnectionService.Connect();
+            Statement get_games = con.createStatement();
             ResultSet all_games = get_games.executeQuery("SELECT name FROM games");
             while(all_games.next()){
                 if(all_games.getString(1).equals(game_name)){
@@ -72,25 +74,25 @@ public class developerAddController {
                     throw new GameAlreadyExistsException(game_name);
                 }
             }
-            String query = "INSERT INTO games VALUES(?,?,?)";
-            PreparedStatement add_game = connection.prepareStatement(query);
-            PreparedStatement games_sequence = connection.prepareStatement("SELECT nextval('games_sq')");
-            ResultSet sequence_number = games_sequence.executeQuery();
-            if(sequence_number.next()){
-                int ID = sequence_number.getInt(1);
-                add_game.setInt(1, ID);
-            }
-            add_game.setString(2, game_name);
-            add_game.setString(3, currentDeveloper);
+            String query = "INSERT INTO games VALUES(?,?)";
+            PreparedStatement add_game = con.prepareStatement(query);
+//            PreparedStatement games_sequence = con.prepareStatement("SELECT nextval('games_sq')");
+//            ResultSet sequence_number = games_sequence.executeQuery();
+//            if(sequence_number.next()){
+//                int ID = sequence_number.getInt(1);
+//                add_game.setInt(1, ID);
+//            }
+            add_game.setString(1, game_name);
+            add_game.setString(2, currentDeveloper);
             add_game.executeUpdate();
             approvedText.setText("Game added successfully");
             initialPane.setVisible(false);
             declinePane.setVisible(false);
             approvedPane.setVisible(true);
-            connection.close();
+            con.close();
             add_game.close();
-            games_sequence.close();
-            sequence_number.close();
+//            games_sequence.close();
+//            sequence_number.close();
         }
         catch (GameAlreadyExistsException e){
             e.printStackTrace();

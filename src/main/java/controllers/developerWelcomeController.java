@@ -16,6 +16,7 @@ import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import model.Developer;
 import model.Order;
+import services.ConnectionService;
 import services.DeveloperService;
 
 import java.io.IOException;
@@ -58,13 +59,13 @@ public class developerWelcomeController implements Initializable {
         welcomeLabel.setText("Welcome, " + currentDeveloper);
         int totalOrders = 0;
         try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-            Statement check_orders = connection.createStatement();
+            Connection con = ConnectionService.Connect();
+            Statement check_orders = con.createStatement();
             ResultSet orders_information = check_orders.executeQuery("SELECT id FROM orders WHERE seller = '" + currentDeveloper + "'");
             while(orders_information.next()){
                 totalOrders++;
             }
-            connection.close();
+            con.close();
             check_orders.close();
         } catch (Exception e){
             e.printStackTrace();

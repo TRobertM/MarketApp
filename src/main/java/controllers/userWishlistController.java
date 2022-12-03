@@ -17,10 +17,15 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Game;
 import model.User;
+import services.ConnectionService;
 import services.GameService;
 import services.UserService;
 
+import javax.xml.transform.Result;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class userWishlistController {
     @FXML
@@ -32,18 +37,14 @@ public class userWishlistController {
     @FXML
     Button backButton;
     String userName;
-    int i;
 
     public void setUser(String name) {
         userName = name;
-        for (User user : UserService.users) {
-            if (user.getUsername().equals(userName)) {
-                break;
-            }
-            i++;
-        }
-        for (Game game : GameService.games) {
-            if (UserService.users.get(i).getWishlist().contains(game)) {
+        try{
+            Connection con = ConnectionService.Connect();
+            Statement get_cart = con.createStatement();
+            ResultSet cart_games = get_cart.executeQuery("SELECT name FROM wishlist WHERE wishlister = '" + userName + "'");
+            while(cart_games.next()){
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
@@ -79,19 +80,24 @@ public class userWishlistController {
                 });
                 g.setMinHeight(40);
                 g.setMinWidth(528);
-                Label n = new Label(game.getName());
+                Label n = new Label(cart_games.getString(1));
                 n.relocate(10, 12);
                 g.getChildren().add(n);
                 gameShop.getChildren().add(g);
             }
+            cart_games.close();
+            get_cart.close();
+            con.close();
+        } catch (Exception e){
+            e.printStackTrace();
         }
+
     }
 
     private EventHandler<ActionEvent> addCart = new EventHandler<>() {
         public void handle(ActionEvent event) {
             Pane p = new Pane();
             String g = "";
-            int j = 0;
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
                     for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
@@ -104,15 +110,16 @@ public class userWishlistController {
                     }
                 }
             }
-            for(Game game : GameService.games){
-                if(game.getName().equals(g)){
-                    break;
-                }
-                j++;
+            try{
+                Connection con = ConnectionService.Connect();
+                Statement add_cart = con.createStatement();
+                add_cart.executeUpdate("INSERT INTO user_cart VALUES ('" + g + "', '" + userName + "')");
+                add_cart.executeUpdate("DELETE FROM wishlist WHERE wishlister = '" + userName + "' and name = '" + g + "'");
+                add_cart.close();
+                con.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
-            UserService.users.get(i).getWishlist().remove(GameService.games.get(j));
-            UserService.users.get(i).getCart().add(GameService.games.get(j));
-            UserService.persistUsers();
         }
     };
 
@@ -133,14 +140,15 @@ public class userWishlistController {
                     }
                 }
             }
-            for(Game game : GameService.games){
-                if(game.getName().equals(g)){
-                    break;
-                }
-                j++;
+            try{
+                Connection con = ConnectionService.Connect();
+                Statement remove_cart = con.createStatement();
+                remove_cart.executeUpdate("DELETE FROM wishlist WHERE wishlister = '" + userName + "' and name = '" + g + "'");
+                remove_cart.close();
+                con.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
-            UserService.users.get(i).getWishlist().remove(GameService.games.get(j));
-            UserService.persistUsers();
         }
     };
 
@@ -158,7 +166,7 @@ public class userWishlistController {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
         Parent root = loader.load();
         userWelcomeController uw = loader.getController();
-        uw.setDev(UserService.users.get(i).getUsername());
+        uw.setDev(userName);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);

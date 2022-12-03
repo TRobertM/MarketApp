@@ -17,6 +17,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 import model.User;
 import org.postgresql.util.PSQLException;
+import services.ConnectionService;
 import services.DeveloperService;
 import services.UserService;
 import java.io.IOException;
@@ -87,36 +88,37 @@ public class RegisterController implements Initializable {
         }
         if(roleSelector.getValue().equals("Developer")){
             try {
-                //DeveloperService.addUser(registerUsernameField.getText() , registerPasswordField.getText());
-                errorText.setText("Registered successfully");
-                errorText.setFill(Color.GREEN);
-                errorPane.setVisible(true);
 
                 ////// SQL Database add developer account to database
                 String username = registerUsernameField.getText();
                 String password = DeveloperService.encodePassword(registerUsernameField.getText(), registerPasswordField.getText());
-                Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-                Statement check_developers = connection.createStatement();
-                ResultSet all_developers = check_developers.executeQuery("SELECT username FROM users WHERE role = 'Developer'");
+                Connection con = ConnectionService.Connect();
+                Statement check_developers = con.createStatement();
+                ResultSet all_developers = check_developers.executeQuery("SELECT username FROM users");
                 while(all_developers.next()){
                     if(username.equals(all_developers.getString(1))){
                         throw new UsernameAlreadyExistsException(username);
                     }
                 }
-                String query = "INSERT INTO users VALUES(?,?,?,?)";
-                PreparedStatement ps = connection.prepareStatement(query);
-                PreparedStatement sequence_value = connection.prepareStatement("SELECT nextval('users_sq')");
-                ResultSet rs = sequence_value.executeQuery();
-                if(rs.next()){
-                    int next_ID = rs.getInt(1);
-                    ps.setInt(1,next_ID);
-                }
-                ps.setString(2, username);
-                ps.setString(3, password);
-                ps.setString(4, "Developer");
+                String query = "INSERT INTO users VALUES(?,?,?)";
+                PreparedStatement ps = con.prepareStatement(query);
+//                PreparedStatement sequence_value = con.prepareStatement("SELECT nextval('users_sq')");
+//                ResultSet rs = sequence_value.executeQuery();
+//                if(rs.next()){
+//                    int next_ID = rs.getInt(1);
+//                    ps.setInt(1,next_ID);
+//                }
+                ps.setString(1, username);
+                ps.setString(2, password);
+                ps.setString(3, "Developer");
                 ps.executeUpdate();
                 ps.close();
-                connection.close();
+                check_developers.close();
+//                sequence_value.close();
+                con.close();
+                errorText.setText("Registered successfully");
+                errorText.setFill(Color.GREEN);
+                errorPane.setVisible(true);
                 /////
             } catch (UsernameAlreadyExistsException e){
                 errorText.setFill(Color.RED);
@@ -126,33 +128,36 @@ public class RegisterController implements Initializable {
                 errorText.setFill(Color.RED);
                 errorText.setText("Failed to create account, rewrite every field and try again!");
                 errorPane.setVisible(true);
+                e.printStackTrace();
             }
         } else {
             try {
                 String username = registerUsernameField.getText();
                 String password = DeveloperService.encodePassword(registerUsernameField.getText(), registerPasswordField.getText());
-                Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-                Statement check_users = connection.createStatement();
-                ResultSet all_customers = check_users.executeQuery("SELECT username FROM users WHERE role = 'Customer'");
+                Connection con = ConnectionService.Connect();
+                Statement check_users = con.createStatement();
+                ResultSet all_customers = check_users.executeQuery("SELECT username FROM users");
                 while(all_customers.next()){
                     if(username.equals(all_customers.getString(1))){
                         throw new UsernameAlreadyExistsException(username);
                     }
                 }
-                String query = "INSERT INTO users VALUES(?,?,?,?)";
-                PreparedStatement ps = connection.prepareStatement(query);
-                PreparedStatement sequence_value = connection.prepareStatement("SELECT nextval('users_sq')");
-                ResultSet rs = sequence_value.executeQuery();
-                if(rs.next()){
-                    int next_ID = rs.getInt(1);
-                    ps.setInt(1,next_ID);
-                }
-                ps.setString(2, username);
-                ps.setString(3, password);
-                ps.setString(4, "Customer");
+                String query = "INSERT INTO users VALUES(?,?,?)";
+                PreparedStatement ps = con.prepareStatement(query);
+//                PreparedStatement sequence_value = con.prepareStatement("SELECT nextval('users_sq')");
+//                ResultSet rs = sequence_value.executeQuery();
+//                if(rs.next()){
+//                    int next_ID = rs.getInt(1);
+//                    ps.setInt(1,next_ID);
+//                }
+                ps.setString(1, username);
+                ps.setString(2, password);
+                ps.setString(3, "Customer");
                 ps.executeUpdate();
                 ps.close();
-                connection.close();
+//                sequence_value.close();
+                check_users.close();
+                con.close();
                 errorText.setText("Registered successfully");
                 errorText.setFill(Color.GREEN);
                 errorPane.setVisible(true);
@@ -160,7 +165,6 @@ public class RegisterController implements Initializable {
                 errorText.setFill(Color.RED);
                 errorText.setText("An account with the given username already exists!");
                 errorPane.setVisible(true);
-                System.out.println(e);
             } catch (Exception e){
                 errorText.setFill(Color.RED);
                 errorText.setText("Failed to create account, rewrite every field and try again!");

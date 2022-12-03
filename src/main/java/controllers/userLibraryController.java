@@ -17,10 +17,14 @@ import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import model.Game;
 import model.User;
+import services.ConnectionService;
 import services.GameService;
 import services.UserService;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class userLibraryController {
     @FXML
@@ -33,7 +37,6 @@ public class userLibraryController {
     Button goBackButton;
 
     String userName;
-    int i;
 
     public void closeWindow(){
         Stage stage = (Stage) closeButton.getScene().getWindow();
@@ -45,31 +48,22 @@ public class userLibraryController {
         stage.setIconified(true);
     }
 
-    public void setUser(String name){
+    public void setUser(String name) {
         userName = name;
         try {
-            UserService.loadUsersFromFile();
-            GameService.loadgamesfromfile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for(User user : UserService.users){
-            if(user.getUsername().equals(userName)) {
-                break;
-            }
-            i++;
-        }
-        for(Game game : GameService.games){
-            if(UserService.users.get(i).getWishlist().contains(game)){
-                continue;
-            }
-            if(UserService.users.get(i).getCart().contains(game)){
-                continue;
-            }
-            if(UserService.users.get(i).getGames().contains(game)){
-                continue;
-            }
-            else{
+            Connection con = ConnectionService.Connect();
+            Statement get_games = con.createStatement();
+            ResultSet all_games = get_games.executeQuery(
+                    "SELECT name FROM games WHERE name NOT IN(" +
+                            "SELECT name FROM owned WHERE owner = '" + userName + "' " +
+                            "UNION " +
+                            "SELECT name FROM wishlist WHERE wishlister = '" + userName + "' " +
+                            "UNION " +
+                            "SELECT game FROM orders WHERE buyer = '" + userName + "' " +
+                            "UNION " +
+                            "SELECT game_name FROM user_cart WHERE user_name = 'test' )"
+            );
+            while (all_games.next()) {
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
@@ -95,7 +89,7 @@ public class userLibraryController {
                         b2.setGraphic(view2);
                         b2.setOnAction(addWishlist);
                         b2.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);");
-                        b2.relocate(550,8.5);
+                        b2.relocate(550, 8.5);
                         g.getChildren().add(b2);
                     }
                 });
@@ -110,11 +104,13 @@ public class userLibraryController {
                 });
                 g.setMinHeight(40);
                 g.setMinWidth(528);
-                Label n = new Label(game.getName());
+                Label n = new Label(all_games.getString(1));
                 n.relocate(10, 12);
                 g.getChildren().add(n);
                 gameShop.getChildren().add(g);
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 
@@ -122,7 +118,6 @@ public class userLibraryController {
         public void handle(ActionEvent event) {
             Pane p = new Pane();
             String g = "";
-            int j = 0;
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
                     for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
@@ -135,14 +130,20 @@ public class userLibraryController {
                     }
                 }
             }
-            for(Game game : GameService.games){
-                if(game.getName().equals(g)){
-                    break;
+            try{
+                Connection con = ConnectionService.Connect();
+                Statement wishlist_game = con.createStatement();
+                ResultSet game_information = wishlist_game.executeQuery("SELECT name, developer FROM games WHERE name = '" + g + "'");
+                if(game_information.next()){
+                    wishlist_game.executeUpdate("INSERT INTO wishlist (name, developer, wishlister) VALUES ('" + game_information.getString(1) + "', '" +
+                            game_information.getString(2) + "', '" + userName + "')" );
                 }
-                j++;
+                game_information.close();
+                wishlist_game.close();
+                con.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
-            UserService.users.get(i).getWishlist().add(GameService.games.get(j));
-            UserService.persistUsers();
         }
     };
 
@@ -150,7 +151,6 @@ public class userLibraryController {
         public void handle(ActionEvent event) {
             Pane p = new Pane();
             String g = "";
-            int j = 0;
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
                     for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
@@ -163,14 +163,19 @@ public class userLibraryController {
                     }
                 }
             }
-            for(Game game : GameService.games){
-                if(game.getName().equals(g)){
-                    break;
+            try{
+                Connection con = ConnectionService.Connect();
+                Statement cart_game = con.createStatement();
+                ResultSet game_information = cart_game.executeQuery("SELECT name FROM games WHERE name = '" + g + "'");
+                if(game_information.next()){
+                    cart_game.executeUpdate("INSERT INTO user_cart VALUES ('" + game_information.getString(1) + "', '" + userName + "')" );
                 }
-                j++;
+                game_information.close();
+                cart_game.close();
+                con.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
-            UserService.users.get(i).getCart().add(GameService.games.get(j));
-            UserService.persistUsers();
         }
     };
 
@@ -178,7 +183,7 @@ public class userLibraryController {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
         Parent root = loader.load();
         userWelcomeController uw = loader.getController();
-        uw.setDev(UserService.users.get(i).getUsername());
+        uw.setDev(userName);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);

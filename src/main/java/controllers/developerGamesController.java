@@ -14,18 +14,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Developer;
-import model.Game;
-import model.User;
-import services.DeveloperService;
-import services.GameService;
-import services.UserService;
+import services.ConnectionService;
+
 
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ResourceBundle;
@@ -42,9 +37,8 @@ public class developerGamesController implements Initializable {
     @FXML
     Pane warningPane;
 
-    // devName is used to store the name of the logged in developer and i is used to know the place of the developer in the developers.json file
+    // devName is used to store the name of the logged in developer
     String devName;
-    int i;
 
     // Useless ATM used it for some checks and testing
     @Override
@@ -82,8 +76,8 @@ public class developerGamesController implements Initializable {
     public void setDevName(String name){
         devName = name;
         try {
-            Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-            Statement check_games = connection.createStatement();
+            Connection con = ConnectionService.Connect();
+            Statement check_games = con.createStatement();
             ResultSet all_games = check_games.executeQuery("SELECT name FROM games WHERE developer = '" + devName + "'");
             while(all_games.next()){
                 Pane g = new Pane();
@@ -113,7 +107,7 @@ public class developerGamesController implements Initializable {
                 g.getChildren().add(n);
                 gameShop.getChildren().add(g);
             }
-            connection.close();
+            con.close();
             check_games.close();
             all_games.close();
         } catch (Exception e){
@@ -128,14 +122,13 @@ public class developerGamesController implements Initializable {
     private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {
             try {
-                Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/postgres", "postgres", "admin");
-                Statement delete_game = connection.createStatement();
-                Statement verify_orders = connection.createStatement();
+                Connection con = ConnectionService.Connect();
+                Statement delete_game = con.createStatement();
+                Statement verify_orders = con.createStatement();
                 ResultSet orders = verify_orders.executeQuery("SELECT id FROM orders WHERE seller = '" + devName + "'");
                 if (orders.next()) {
                     warningPane.setVisible(true);
-                    verify_orders.close();
-                    orders.close();
+
                 } else {
                     Pane p;
                     String g = "";
@@ -154,7 +147,9 @@ public class developerGamesController implements Initializable {
                     delete_game.executeUpdate("DELETE FROM games WHERE name = '" + g + "'");
                     delete_game.close();
                 }
-                connection.close();
+                verify_orders.close();
+                orders.close();
+                con.close();
             } catch (Exception e){
                 e.printStackTrace();
             }
