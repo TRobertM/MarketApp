@@ -13,16 +13,10 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Developer;
-import model.Game;
 import services.ConnectionService;
-import services.DeveloperService;
-import services.GameService;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.sql.*;
-import java.util.Properties;
 
 public class developerAddController {
     @FXML
@@ -43,7 +37,6 @@ public class developerAddController {
     Text approvedText;
     @FXML
     Text declineText;
-    int i;
     String currentDeveloper;
 
     public void setDev(String dev){
@@ -74,8 +67,8 @@ public class developerAddController {
                     throw new GameAlreadyExistsException(game_name);
                 }
             }
-            String query = "INSERT INTO games VALUES(?,?)";
-            PreparedStatement add_game = con.prepareStatement(query);
+//            String query = "INSERT INTO games VALUES(?,?)";
+            PreparedStatement add_game = con.prepareStatement("INSERT INTO games VALUES(?,?)");
 //            PreparedStatement games_sequence = con.prepareStatement("SELECT nextval('games_sq')");
 //            ResultSet sequence_number = games_sequence.executeQuery();
 //            if(sequence_number.next()){

@@ -36,11 +36,9 @@ public class developerGamesController implements Initializable {
     VBox gameShop;
     @FXML
     Pane warningPane;
-
-    // devName is used to store the name of the logged in developer
     String devName;
 
-    // Useless ATM used it for some checks and testing
+    // Useless at this moment,  used it for some checks and testing
     @Override
     public void initialize(URL location, ResourceBundle resources){
         warningPane.setVisible(false);
@@ -70,8 +68,9 @@ public class developerGamesController implements Initializable {
 
     /*
     Outdated method name DO NOT EDIT.
-    Method reads all games from current developer and creates a button for each of them. After that it appends all elements
-    into a scrollPane. Also adds some minor hover effects for every item.
+    Method reads all games from the database that are developed by the currently logged in developer
+    and creates a button for each of them. After that it appends all elements into a scrollPane.
+    Also adds some minor hover effects for every item.
      */
     public void setDevName(String name){
         devName = name;
@@ -116,8 +115,8 @@ public class developerGamesController implements Initializable {
     }
 
     /*
-    Method of the button. Upon button click, the method gets the name of the connected game and removes it from the scrollPane,
-    removes it from the list of games, removes it from the developers list of games and removes it from every users list of games
+    Method of the button. Upon button click, the method gets the name of the connected game and removes it from the pane while also
+    removing it from every database
      */
     private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {

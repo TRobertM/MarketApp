@@ -4,39 +4,23 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.fxml.Initializable;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Developer;
-import model.Game;
-import model.Order;
-import model.User;
 import services.ConnectionService;
-import services.DeveloperService;
-import services.GameService;
-import services.UserService;
-
-import javax.xml.transform.Result;
 import java.io.IOException;
-import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.ResourceBundle;
 
 public class userCartController {
     @FXML
@@ -53,7 +37,6 @@ public class userCartController {
     Text textPane;
     @FXML
     ScrollPane megaPane;
-
     String userName;
 
     public void setUser(String name){
@@ -147,7 +130,7 @@ public class userCartController {
             while(all_orders.next()){
                 ResultSet sequence_number = order_seq.executeQuery();
                 if(sequence_number.next()){
-                    ID += sequence_number.getInt(1);
+                    ID = sequence_number.getInt(1);
                 }
                 String dev = all_orders.getString(1);
                 String gam = all_orders.getString(2);

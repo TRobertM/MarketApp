@@ -26,9 +26,9 @@ public class Main extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
-        UserService.loadUsersFromFile();
-        DeveloperService.loadDevelopersFromFile();
-        GameService.loadgamesfromfile();
+//        UserService.loadUsersFromFile();
+//        DeveloperService.loadDevelopersFromFile();
+//        GameService.loadgamesfromfile();
         Parent root = FXMLLoader.load(getClass().getResource("scene.fxml"));
         String css = this.getClass().getResource("styles.css").toExternalForm();
         Scene scene = new Scene(root, 1200, 700);

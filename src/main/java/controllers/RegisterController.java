@@ -65,31 +65,34 @@ public class RegisterController implements Initializable {
         registerPasswordAgainField.setEffect(ds);
     }
 
-    // Checks that every field is completed, checks that role is selected and lastly verifies
-    // User can create both developer and customer accounts with the same name this is KNOWN and will be fixed
     public void register() throws Exception {
+        // Check if all fields have been completed with valid inputs
         if (registerUsernameField.getText().trim().isEmpty() || registerPasswordField.getText().trim().isEmpty() || registerPasswordAgainField.getText().trim().isEmpty()) {
             errorText.setFill(Color.RED);
             errorText.setText("Complete all fields to register");
             errorPane.setVisible(true);
             throw new IOException();
         }
+
+        // Check that a role has been selected
         if(roleSelector.getValue() == null){
             errorText.setFill(Color.RED);
             errorText.setText("Role not selected");
             errorPane.setVisible(true);
             throw new Exception();
         }
+
+        // Check that both passwords match
         if(!(registerPasswordField.getText().equals(registerPasswordAgainField.getText()))){
             errorText.setFill(Color.RED);
             errorText.setText("Passwords do not match");
             errorPane.setVisible(true);
             throw new Exception();
         }
+
+        // Creates an account after checking that the username is unique
         if(roleSelector.getValue().equals("Developer")){
             try {
-
-                ////// SQL Database add developer account to database
                 String username = registerUsernameField.getText();
                 String password = DeveloperService.encodePassword(registerUsernameField.getText(), registerPasswordField.getText());
                 Connection con = ConnectionService.Connect();
@@ -100,26 +103,17 @@ public class RegisterController implements Initializable {
                         throw new UsernameAlreadyExistsException(username);
                     }
                 }
-                String query = "INSERT INTO users VALUES(?,?,?)";
-                PreparedStatement ps = con.prepareStatement(query);
-//                PreparedStatement sequence_value = con.prepareStatement("SELECT nextval('users_sq')");
-//                ResultSet rs = sequence_value.executeQuery();
-//                if(rs.next()){
-//                    int next_ID = rs.getInt(1);
-//                    ps.setInt(1,next_ID);
-//                }
+                PreparedStatement ps = con.prepareStatement("INSERT INTO users VALUES(?,?,?)");
                 ps.setString(1, username);
                 ps.setString(2, password);
                 ps.setString(3, "Developer");
                 ps.executeUpdate();
                 ps.close();
                 check_developers.close();
-//                sequence_value.close();
                 con.close();
                 errorText.setText("Registered successfully");
                 errorText.setFill(Color.GREEN);
                 errorPane.setVisible(true);
-                /////
             } catch (UsernameAlreadyExistsException e){
                 errorText.setFill(Color.RED);
                 errorText.setText("An account with the given username already exists!");
@@ -144,18 +138,11 @@ public class RegisterController implements Initializable {
                 }
                 String query = "INSERT INTO users VALUES(?,?,?)";
                 PreparedStatement ps = con.prepareStatement(query);
-//                PreparedStatement sequence_value = con.prepareStatement("SELECT nextval('users_sq')");
-//                ResultSet rs = sequence_value.executeQuery();
-//                if(rs.next()){
-//                    int next_ID = rs.getInt(1);
-//                    ps.setInt(1,next_ID);
-//                }
                 ps.setString(1, username);
                 ps.setString(2, password);
                 ps.setString(3, "Customer");
                 ps.executeUpdate();
                 ps.close();
-//                sequence_value.close();
                 check_users.close();
                 con.close();
                 errorText.setText("Registered successfully");

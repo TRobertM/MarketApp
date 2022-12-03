@@ -7,6 +7,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.util.Properties;
 
+//Reads information from config.properties to create connections to the database
 public class ConnectionService {
     static Connection connection;
 

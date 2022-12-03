@@ -13,12 +13,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Game;
-import model.User;
 import services.ConnectionService;
-import services.DeveloperService;
-import services.GameService;
-import services.UserService;
 
 import java.io.IOException;
 import java.sql.Connection;
@@ -82,7 +77,7 @@ public class userGamesController {
 
     private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
+            Pane p;
             String g = "";
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){

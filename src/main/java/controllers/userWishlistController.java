@@ -15,13 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Game;
-import model.User;
 import services.ConnectionService;
-import services.GameService;
-import services.UserService;
-
-import javax.xml.transform.Result;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;

@@ -13,18 +13,10 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Developer;
-import model.Game;
-import model.Order;
-import model.User;
 import services.ConnectionService;
-import services.DeveloperService;
-import services.GameService;
-import services.UserService;
 
 import java.io.IOException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -39,7 +31,7 @@ public class developerOrdersController {
     VBox allOrders;
 
     String devName;
-    int i;
+    int id = 0;
 
     public void closeWindow(){
         Stage stage = (Stage) closeButton.getScene().getWindow();
@@ -62,6 +54,9 @@ public class developerOrdersController {
         stage.setResizable(false);
     }
 
+    /* Reads the orders database and appends all orders directed at the currently logged in developer in a pane together with
+    2 buttons, one for approving the order and one for declining it
+     */
     public void setDev(String name){
         devName = name;
         try {
@@ -116,15 +111,15 @@ public class developerOrdersController {
         }
     }
 
+    // Declines the order, the user will be able to place another one
     private EventHandler<ActionEvent> declineOrder = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
-            int id = 0;
+            Pane p;
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
                     for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
                         if(node instanceof Label){
-                            id += Integer.valueOf(((Label) node).getText());
+                            id = Integer.valueOf(((Label) node).getText());
                             p = (Pane)node.getParent();
                             allOrders.getChildren().remove(p);
                             break;
@@ -144,15 +139,15 @@ public class developerOrdersController {
         }
     };
 
+    // Accepts the order and edits the owned games database so the user now owns the game it ordered
     private EventHandler<ActionEvent> acceptOrder = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
-            int id = 0;
+            Pane p;
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
                     for(Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()){
                         if(node instanceof Label){
-                            id += Integer.valueOf(((Label)node).getText());
+                            id = Integer.valueOf(((Label)node).getText());
                             p = (Pane)node.getParent();
                             allOrders.getChildren().remove(p);
                             break;

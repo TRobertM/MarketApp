@@ -15,12 +15,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Game;
-import model.User;
 import services.ConnectionService;
-import services.GameService;
-import services.UserService;
-
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -116,7 +111,7 @@ public class userLibraryController {
 
     private EventHandler<ActionEvent> addWishlist = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
+            Pane p;
             String g = "";
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
@@ -149,7 +144,7 @@ public class userLibraryController {
 
     private EventHandler<ActionEvent> addCart = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
+            Pane p;
             String g = "";
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){

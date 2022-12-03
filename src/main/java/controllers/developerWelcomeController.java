@@ -1,6 +1,5 @@
 package controllers;
 
-import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -14,15 +13,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
-import model.Developer;
-import model.Order;
 import services.ConnectionService;
-import services.DeveloperService;
 
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ResourceBundle;
@@ -54,6 +49,7 @@ public class developerWelcomeController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
     }
 
+    // Check if the current developer has any orders pending in the database and displays a notification
     public void setCurrentDeveloper(String developer){
         currentDeveloper = developer;
         welcomeLabel.setText("Welcome, " + currentDeveloper);
