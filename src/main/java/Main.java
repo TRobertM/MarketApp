@@ -2,19 +2,11 @@ import javafx.event.EventHandler;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.StageStyle;
-import services.DeveloperService;
-import services.GameService;
-import services.UserService;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.ResultSet;
-import java.sql.Statement;
 
 public class Main extends Application{
     private double xOffset = 0;
@@ -26,9 +18,6 @@ public class Main extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
-//        UserService.loadUsersFromFile();
-//        DeveloperService.loadDevelopersFromFile();
-//        GameService.loadgamesfromfile();
         Parent root = FXMLLoader.load(getClass().getResource("scene.fxml"));
         String css = this.getClass().getResource("styles.css").toExternalForm();
         Scene scene = new Scene(root, 1200, 700);
