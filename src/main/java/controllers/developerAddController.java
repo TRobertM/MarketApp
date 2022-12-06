@@ -67,14 +67,7 @@ public class developerAddController {
                     throw new GameAlreadyExistsException(game_name);
                 }
             }
-//            String query = "INSERT INTO games VALUES(?,?)";
             PreparedStatement add_game = con.prepareStatement("INSERT INTO games VALUES(?,?)");
-//            PreparedStatement games_sequence = con.prepareStatement("SELECT nextval('games_sq')");
-//            ResultSet sequence_number = games_sequence.executeQuery();
-//            if(sequence_number.next()){
-//                int ID = sequence_number.getInt(1);
-//                add_game.setInt(1, ID);
-//            }
             add_game.setString(1, game_name);
             add_game.setString(2, currentDeveloper);
             add_game.executeUpdate();
@@ -84,14 +77,12 @@ public class developerAddController {
             approvedPane.setVisible(true);
             con.close();
             add_game.close();
-//            games_sequence.close();
-//            sequence_number.close();
         }
         catch (GameAlreadyExistsException e){
             e.printStackTrace();
         }
         catch (Exception e){
-            //e.printStackTrace();
+            e.printStackTrace();
         }
 
     }

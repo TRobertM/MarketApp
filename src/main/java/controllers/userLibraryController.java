@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import services.ConnectionService;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -47,17 +48,12 @@ public class userLibraryController {
         userName = name;
         try {
             Connection con = ConnectionService.Connect();
-            Statement get_games = con.createStatement();
-            ResultSet all_games = get_games.executeQuery(
-                    "SELECT name FROM games WHERE name NOT IN(" +
-                            "SELECT name FROM owned WHERE owner = '" + userName + "' " +
-                            "UNION " +
-                            "SELECT name FROM wishlist WHERE wishlister = '" + userName + "' " +
-                            "UNION " +
-                            "SELECT game FROM orders WHERE buyer = '" + userName + "' " +
-                            "UNION " +
-                            "SELECT game_name FROM user_cart WHERE user_name = 'test' )"
-            );
+            PreparedStatement get_games = con.prepareStatement("SELECT name FROM games WHERE name NOT IN(SELECT name FROM owned WHERE owner = ? UNION SELECT game_name FROM user_cart WHERE user_name = ? UNION SELECT name FROM wishlist WHERE wishlister = ? UNION SELECT game FROM orders WHERE buyer = ?)");
+            get_games.setString(1, userName);
+            get_games.setString(2, userName);
+            get_games.setString(3, userName);
+            get_games.setString(4, userName);
+            ResultSet all_games = get_games.executeQuery();
             while (all_games.next()) {
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -104,6 +100,8 @@ public class userLibraryController {
                 g.getChildren().add(n);
                 gameShop.getChildren().add(g);
             }
+            get_games.close();
+            con.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -127,12 +125,17 @@ public class userLibraryController {
             }
             try{
                 Connection con = ConnectionService.Connect();
-                Statement wishlist_game = con.createStatement();
-                ResultSet game_information = wishlist_game.executeQuery("SELECT name, developer FROM games WHERE name = '" + g + "'");
+                PreparedStatement wishlist_game = con.prepareStatement("SELECT name,developer FROM games WHERE name = ?");
+                PreparedStatement insert_wishlist = con.prepareStatement("INSERT INTO wishlist (name,developer,wishlister) VALUES (?,?,?)");
+                wishlist_game.setString(1 , g);
+                ResultSet game_information = wishlist_game.executeQuery();
                 if(game_information.next()){
-                    wishlist_game.executeUpdate("INSERT INTO wishlist (name, developer, wishlister) VALUES ('" + game_information.getString(1) + "', '" +
-                            game_information.getString(2) + "', '" + userName + "')" );
+                    insert_wishlist.setString(1 , game_information.getString(1));
+                    insert_wishlist.setString(2, game_information.getString(2));
+                    insert_wishlist.setString(3, userName);
+                    insert_wishlist.executeUpdate();
                 }
+                insert_wishlist.close();
                 game_information.close();
                 wishlist_game.close();
                 con.close();
@@ -160,12 +163,17 @@ public class userLibraryController {
             }
             try{
                 Connection con = ConnectionService.Connect();
-                Statement cart_game = con.createStatement();
-                ResultSet game_information = cart_game.executeQuery("SELECT name FROM games WHERE name = '" + g + "'");
+                PreparedStatement cart_game = con.prepareStatement("SELECT name FROM games WHERE name = ?");
+                PreparedStatement add_cart = con.prepareStatement("INSERT INTO user_cart (game_name,User_name) VALUES (?,?)");
+                cart_game.setString(1, g);
+                ResultSet game_information = cart_game.executeQuery();
                 if(game_information.next()){
-                    cart_game.executeUpdate("INSERT INTO user_cart VALUES ('" + game_information.getString(1) + "', '" + userName + "')" );
+                    add_cart.setString(1, game_information.getString(1));
+                    add_cart.setString(2, userName);
+                    add_cart.executeUpdate();
                 }
                 game_information.close();
+                add_cart.close();
                 cart_game.close();
                 con.close();
             } catch (Exception e){

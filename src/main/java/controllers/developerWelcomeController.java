@@ -18,6 +18,7 @@ import services.ConnectionService;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ResourceBundle;
@@ -56,8 +57,9 @@ public class developerWelcomeController implements Initializable {
         int totalOrders = 0;
         try {
             Connection con = ConnectionService.Connect();
-            Statement check_orders = con.createStatement();
-            ResultSet orders_information = check_orders.executeQuery("SELECT id FROM orders WHERE seller = '" + currentDeveloper + "'");
+            PreparedStatement check_orders = con.prepareStatement("SELECT id FROM orders WHERE seller = ?");
+            check_orders.setString(1 , currentDeveloper);
+            ResultSet orders_information = check_orders.executeQuery();
             while(orders_information.next()){
                 totalOrders++;
             }

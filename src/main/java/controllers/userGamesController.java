@@ -17,6 +17,7 @@ import services.ConnectionService;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -37,8 +38,9 @@ public class userGamesController {
         userName = name;
         try{
             Connection con = ConnectionService.Connect();
-            Statement get_games = con.createStatement();
-            ResultSet user_games = get_games.executeQuery("SELECT name FROM owned WHERE owner = '" + userName + "'");
+            PreparedStatement get_games = con.prepareStatement("SELECT name FROM owned WHERE owner = ?");
+            get_games.setString(1 , userName);
+            ResultSet user_games = get_games.executeQuery();
             while(user_games.next()){
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -93,8 +95,10 @@ public class userGamesController {
             }
             try{
                 Connection con = ConnectionService.Connect();
-                Statement remove_game = con.createStatement();
-                remove_game.executeUpdate("DELETE FROM owned WHERE owner = '" + userName + "' and name = '" + g + "'");
+                PreparedStatement remove_game = con.prepareStatement("DELETE FROM owned WHERE owner = ? and name = ?");
+                remove_game.setString(1 , userName);
+                remove_game.setString(2, g);
+                remove_game.executeUpdate();
                 remove_game.close();
                 con.close();
             } catch (Exception e){

@@ -18,6 +18,7 @@ import javafx.stage.Stage;
 import services.ConnectionService;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -36,8 +37,9 @@ public class userWishlistController {
         userName = name;
         try{
             Connection con = ConnectionService.Connect();
-            Statement get_cart = con.createStatement();
-            ResultSet cart_games = get_cart.executeQuery("SELECT name FROM wishlist WHERE wishlister = '" + userName + "'");
+            PreparedStatement get_cart = con.prepareStatement("SELECT name FROM wishlist WHERE wishlister = ?");
+            get_cart.setString(1, userName);
+            ResultSet cart_games = get_cart.executeQuery();
             while(cart_games.next()){
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -90,7 +92,7 @@ public class userWishlistController {
 
     private EventHandler<ActionEvent> addCart = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
+            Pane p;
             String g = "";
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
@@ -106,10 +108,16 @@ public class userWishlistController {
             }
             try{
                 Connection con = ConnectionService.Connect();
-                Statement add_cart = con.createStatement();
-                add_cart.executeUpdate("INSERT INTO user_cart VALUES ('" + g + "', '" + userName + "')");
-                add_cart.executeUpdate("DELETE FROM wishlist WHERE wishlister = '" + userName + "' and name = '" + g + "'");
+                PreparedStatement add_cart = con.prepareStatement("INSERT INTO user_cart VALUES (?,?)");
+                add_cart.setString(1 , g);
+                add_cart.setString(2 , userName);
+                add_cart.executeUpdate();
+                PreparedStatement delete_game = con.prepareStatement("DELETE FROM wishlist WHERE wishlister = ? and name = ?");
+                delete_game.setString(1, userName);
+                delete_game.setString(2 , g);
+                delete_game.executeUpdate();
                 add_cart.close();
+                delete_game.close();
                 con.close();
             } catch (Exception e){
                 e.printStackTrace();
@@ -136,8 +144,10 @@ public class userWishlistController {
             }
             try{
                 Connection con = ConnectionService.Connect();
-                Statement remove_cart = con.createStatement();
-                remove_cart.executeUpdate("DELETE FROM wishlist WHERE wishlister = '" + userName + "' and name = '" + g + "'");
+                PreparedStatement remove_cart = con.prepareStatement("DELETE FROM wishlist WHERE wishlister = ? and name = ?");
+                remove_cart.setString(1 , userName);
+                remove_cart.setString(2 , g);
+                remove_cart.executeUpdate();
                 remove_cart.close();
                 con.close();
             } catch (Exception e){

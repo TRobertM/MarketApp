@@ -17,6 +17,7 @@ import services.ConnectionService;
 
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
@@ -61,8 +62,9 @@ public class developerOrdersController {
         devName = name;
         try {
             Connection con = ConnectionService.Connect();
-            Statement check_orders = con.createStatement();
-            ResultSet all_orders = check_orders.executeQuery("SELECT id, game, buyer FROM orders WHERE seller = '" + devName + "'");
+            PreparedStatement check_orders = con.prepareStatement("SELECT id,game,buyer FROM orders WHERE seller = ?");
+            check_orders.setString(1, devName);
+            ResultSet all_orders = check_orders.executeQuery();
             while(all_orders.next()) {
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
@@ -129,8 +131,9 @@ public class developerOrdersController {
             }
             try{
                 Connection con = ConnectionService.Connect();
-                Statement check_order = con.createStatement();
-                check_order.executeUpdate("DELETE FROM orders WHERE id = '" + id + "'");
+                PreparedStatement check_order = con.prepareStatement("DELETE FROM orders WHERE id = ?");
+                check_order.setInt(1, id);
+                check_order.executeUpdate();
                 con.close();
                 check_order.close();
             } catch (Exception e){
@@ -157,13 +160,19 @@ public class developerOrdersController {
             }
             try{
                 Connection con = ConnectionService.Connect();
-                Statement accept_order = con.createStatement();
-                ResultSet order_id = accept_order.executeQuery("SELECT game , buyer , seller FROM orders WHERE id = '" + id + "'");
+                PreparedStatement accept_order = con.prepareStatement("SELECT game,buyer,seller FROM orders WHERE id = ?");
+                accept_order.setInt(1,id);
+                ResultSet order_id = accept_order.executeQuery();
+                PreparedStatement add_owned = con.prepareStatement("INSERT INTO owned (name,owner,developer) VALUES (?,?,?)");
+                PreparedStatement delete_order = con.prepareStatement("DELETE FROM orders WHERE id = ?");
                 if(order_id.next()){
-                    accept_order.executeUpdate("INSERT INTO owned (name, developer, owner) VALUES ('" + order_id.getString(1) + "', '"
-                                                + order_id.getString(3) + "', '" + order_id.getString(2) + "')");
-                    accept_order.executeUpdate("DELETE FROM orders WHERE id = '" + id + "'");
+                    add_owned.setString(1, order_id.getString(1));
+                    add_owned.setString(2, order_id.getString(2));
+                    add_owned.setString(3, order_id.getString(3));
+                    add_owned.executeUpdate();
                 }
+                delete_order.setInt(1, id);
+                delete_order.executeUpdate();
                 con.close();
                 accept_order.close();
                 order_id.close();

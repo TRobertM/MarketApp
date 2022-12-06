@@ -21,6 +21,7 @@ import services.ConnectionService;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 import java.util.ResourceBundle;
@@ -76,8 +77,9 @@ public class developerGamesController implements Initializable {
         devName = name;
         try {
             Connection con = ConnectionService.Connect();
-            Statement check_games = con.createStatement();
-            ResultSet all_games = check_games.executeQuery("SELECT name FROM games WHERE developer = '" + devName + "'");
+            PreparedStatement check_games = con.prepareStatement("SELECT name FROM games WHERE developer = ?");
+            check_games.setString(1, devName);
+            ResultSet all_games = check_games.executeQuery();
             while(all_games.next()){
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {

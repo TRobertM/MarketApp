@@ -43,8 +43,9 @@ public class userCartController {
         userName = name;
         try{
             Connection con = ConnectionService.Connect();
-            Statement get_cart = con.createStatement();
-            ResultSet cart_games = get_cart.executeQuery("SELECT game_name FROM user_cart WHERE user_name = '" + userName + "'");
+            PreparedStatement get_cart = con.prepareStatement("SELECT game_name FROM user_cart WHERE user_name = ?");
+            get_cart.setString(1 , userName);
+            ResultSet cart_games = get_cart.executeQuery();
             if(cart_games.next() == false){
                 textPane.setText("Your cart is empty!");
                 textPane.setStyle("-fx-text-fill: white");
@@ -90,7 +91,7 @@ public class userCartController {
 
     private EventHandler<ActionEvent> removeCart = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
+            Pane p;
             String g = "";
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
@@ -106,8 +107,10 @@ public class userCartController {
             }
             try{
                 Connection con = ConnectionService.Connect();
-                Statement remove_cart = con.createStatement();
-                remove_cart.executeUpdate("DELETE FROM user_cart WHERE game_name = '" + g + "' and user_name = '" + userName + "'");
+                PreparedStatement remove_cart = con.prepareStatement("DELETE FROM user_cart WHERE game_name = ? and user_name = ?");
+                remove_cart.setString(1 , g);
+                remove_cart.setString(2, userName);
+                remove_cart.executeUpdate();
                 remove_cart.close();
                 con.close();
             }catch(Exception e){
@@ -122,10 +125,12 @@ public class userCartController {
             Connection con = ConnectionService.Connect();
             Statement send_orders = con.createStatement();
             PreparedStatement delete_game = con.prepareStatement("DELETE FROM user_cart WHERE game_name = ? and user_name = ?");
-            PreparedStatement order_sequence = con.prepareStatement("INSERT INTO orders VALUES(?,?,?,?)");
+            PreparedStatement add_order = con.prepareStatement("INSERT INTO orders VALUES(?,?,?,?)");
             PreparedStatement order_seq = con.prepareStatement("SELECT nextval('orders_sq')");
-            ResultSet all_orders = send_orders.executeQuery("SELECT games.developer, games.name, user_cart.user_name " +
-                    "FROM games INNER JOIN user_cart on games.name = user_cart.game_name WHERE user_cart.user_name = '" + userName + "'");
+            PreparedStatement select_info = con.prepareStatement("SELECT games.developer, games.name, user_cart.user_name FROM games INNER JOIN user_cart on " +
+                    "games.name = user_cart.game_name WHERE user_cart.user_name = ?");
+            select_info.setString(1, userName);
+            ResultSet all_orders = select_info.executeQuery();
 
             while(all_orders.next()){
                 ResultSet sequence_number = order_seq.executeQuery();
@@ -136,12 +141,12 @@ public class userCartController {
                 String gam = all_orders.getString(2);
                 String nam = all_orders.getString(3);
 
-                order_sequence.setInt(1, ID);
-                order_sequence.setString(2, gam);
-                order_sequence.setString(3, nam);
-                order_sequence.setString(4, dev);
+                add_order.setInt(1, ID);
+                add_order.setString(2, gam);
+                add_order.setString(3, nam);
+                add_order.setString(4, dev);
 
-                order_sequence.executeUpdate();
+                add_order.executeUpdate();
 
                 delete_game.setString(1, gam);
                 delete_game.setString(2, nam);
@@ -149,10 +154,11 @@ public class userCartController {
                 delete_game.executeUpdate();
                 sequence_number.close();
             }
+            select_info.close();
             all_orders.close();
             send_orders.close();
             delete_game.close();
-            order_sequence.close();
+            add_order.close();
             order_seq.close();
             con.close();
         } catch(Exception e){
