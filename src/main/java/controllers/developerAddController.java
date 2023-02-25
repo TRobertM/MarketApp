@@ -13,15 +13,12 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.Pane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Developer;
-import model.Game;
-import services.DeveloperService;
-import services.GameService;
+import services.ConnectionService;
 
 import java.io.IOException;
+import java.sql.*;
 
 public class developerAddController {
-    Developer deve;
     @FXML
     Button addGameButton;
     @FXML
@@ -40,21 +37,14 @@ public class developerAddController {
     Text approvedText;
     @FXML
     Text declineText;
-    int i;
+    String currentDeveloper;
 
-    public void setDev(Developer dev){
-        this.deve = dev;
+    public void setDev(String dev){
+        currentDeveloper = dev;
     }
 
     public void add() throws GameAlreadyExistsException, IOException {
-        String gm = gameNameLabel.getText();
-        GameService.loadgamesfromfile();
-        for(Developer dev : DeveloperService.developers){
-            if(dev.getUsername().equals(deve.getUsername())){
-                break;
-            }
-            i++;
-        }
+        String game_name = gameNameLabel.getText();
         if(gameNameLabel.getText().trim().isEmpty()){
             declineText.setText("Invalid name");
             initialPane.setVisible(false);
@@ -62,31 +52,46 @@ public class developerAddController {
             declinePane.setVisible(true);
             throw new IOException();
         }
-        for(Game game : GameService.games){
-            if(game.getName().equals(gm)){
-                declineText.setText("Game already exists");
-                approvedPane.setVisible(false);
-                initialPane.setVisible(false);
-                declinePane.setVisible(true);
-                throw new GameAlreadyExistsException(game.getName());
+        try{
+            Connection con = ConnectionService.Connect();
+            Statement get_games = con.createStatement();
+            ResultSet all_games = get_games.executeQuery("SELECT name FROM games");
+            while(all_games.next()){
+                if(all_games.getString(1).equals(game_name)){
+                    declineText.setText("Game already exists");
+                    approvedPane.setVisible(false);
+                    initialPane.setVisible(false);
+                    declinePane.setVisible(true);
+                    get_games.close();
+                    all_games.close();
+                    throw new GameAlreadyExistsException(game_name);
+                }
             }
+            PreparedStatement add_game = con.prepareStatement("INSERT INTO games VALUES(?,?)");
+            add_game.setString(1, game_name);
+            add_game.setString(2, currentDeveloper);
+            add_game.executeUpdate();
+            approvedText.setText("Game added successfully");
+            initialPane.setVisible(false);
+            declinePane.setVisible(false);
+            approvedPane.setVisible(true);
+            con.close();
+            add_game.close();
         }
-        approvedText.setText("Game added successfully");
-        initialPane.setVisible(false);
-        declinePane.setVisible(false);
-        approvedPane.setVisible(true);
-        Game bufferGame = new Game(gm, DeveloperService.developers.get(i).getUsername());
-        GameService.addGame(gm, DeveloperService.developers.get(i).getUsername());
-        DeveloperService.developers.get(i).addGame(bufferGame);
-        GameService.persistUsers();
-        DeveloperService.persistUsers();
+        catch (GameAlreadyExistsException e){
+            e.printStackTrace();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
     public void goBack(ActionEvent e) throws IOException {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
         Parent root = loader.load();
         developerWelcomeController w1 = loader.getController();
-        w1.setCurrentDeveloper(deve);
+        w1.setCurrentDeveloper(currentDeveloper);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);

@@ -11,12 +11,10 @@ import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
-import model.Developer;
 import services.DeveloperService;
 import services.UserService;
 
@@ -63,14 +61,14 @@ public class Controller implements Initializable {
 
     // Login method
     public void login(ActionEvent e) throws IOException {
-        // Check if the fields are empty and modify errorText accordingly.
+        // Check if the fields are empty
         if (usernameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty()) {
             errorText.setText("Please fill everything before trying to log in");
             errorPane.setVisible(true);
             throw new IOException();
         }
 
-        // If the user trying to log in is a customer, log him in and send him to the customer main page
+        // Customer login
         if (UserService.login(usernameField.getText(), passwordField.getText())) {
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
             Parent root = loader.load();
@@ -82,24 +80,19 @@ public class Controller implements Initializable {
             stage.setResizable(false);
         }
 
-        // If the user is a developer, log him into the developer main page and send to the developer main page information about the developer that just logged in
+        // Developer login
         else if(DeveloperService.login(usernameField.getText(), passwordField.getText())){
             FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
             Parent root = loader.load();
             developerWelcomeController w1 = loader.getController();
-            for(Developer dev : DeveloperService.developers){
-                if(dev.getUsername().equals(usernameField.getText())){
-                    w1.setCurrentDeveloper(dev);
-                    break;
-                }
-            }
+            w1.setCurrentDeveloper(usernameField.getText());
             Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
             Scene scene = new Scene(root);
             stage.setScene(scene);
             stage.setResizable(false);
         }
 
-        // If the user is not found in any file it means the username or password are wrong
+        // Error if the user is not found in the database
         else {
             errorText.setText("Wrong username or password");
             errorPane.setVisible(true);

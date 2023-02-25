@@ -13,13 +13,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Game;
-import model.User;
-import services.DeveloperService;
-import services.GameService;
-import services.UserService;
+import services.ConnectionService;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 
 public class userGamesController {
     @FXML
@@ -31,55 +31,55 @@ public class userGamesController {
     @FXML
     VBox myGames;
 
-    int i = 0;
     String userName;
 
 
     public void setUser(String name){
         userName = name;
-        for(User user : UserService.users){
-            if(user.getUsername().equals(userName)){
-                break;
-            }
-            i++;
-        }
-        if(!GameService.games.isEmpty()) {
-            for (Game game : DeveloperService.developers.get(i).getGames()) {
-                if (UserService.users.get(i).getGames().contains(game)) {
-                    Pane g = new Pane();
-                    g.setOnMouseEntered(new EventHandler<MouseEvent>() {
+        try{
+            Connection con = ConnectionService.Connect();
+            PreparedStatement get_games = con.prepareStatement("SELECT name FROM owned WHERE owner = ?");
+            get_games.setString(1 , userName);
+            ResultSet user_games = get_games.executeQuery();
+            while(user_games.next()){
+                Pane g = new Pane();
+                g.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
-                        @Override
-                        public void handle(MouseEvent t) {
-                            g.setStyle("-fx-background-color:#160e36;");
-                            Button b = new Button("X");
-                            b.setOnAction(removeGame);
-                            b.relocate(590, 8.5);
-                            g.getChildren().add(b);
-                        }
-                    });
-                    g.setOnMouseExited(new EventHandler<MouseEvent>() {
+                    @Override
+                    public void handle(MouseEvent t) {
+                        g.setStyle("-fx-background-color:#160e36;");
+                        Button b = new Button("X");
+                        b.setOnAction(removeGame);
+                        b.relocate(590, 8.5);
+                        g.getChildren().add(b);
+                    }
+                });
+                g.setOnMouseExited(new EventHandler<MouseEvent>() {
 
-                        @Override
-                        public void handle(MouseEvent t) {
-                            g.setStyle("-fx-background-color:transparent;");
-                            g.getChildren().remove(1);
-                        }
-                    });
-                    g.setMinHeight(40);
-                    g.setMinWidth(528);
-                    Label n = new Label(game.getName());
-                    n.relocate(10, 12);
-                    g.getChildren().add(n);
-                    myGames.getChildren().add(g);
-                }
+                    @Override
+                    public void handle(MouseEvent t) {
+                        g.setStyle("-fx-background-color:transparent;");
+                        g.getChildren().remove(1);
+                    }
+                });
+                g.setMinHeight(40);
+                g.setMinWidth(528);
+                Label n = new Label(user_games.getString(1));
+                n.relocate(10, 12);
+                g.getChildren().add(n);
+                myGames.getChildren().add(g);
             }
+            user_games.close();
+            get_games.close();
+            con.close();
+        } catch(Exception e){
+            e.printStackTrace();
         }
     }
 
     private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            Pane p = new Pane();
+            Pane p;
             String g = "";
             if(event.getSource() instanceof Button){
                 if(((Button) event.getSource()).getParent() instanceof Pane){
@@ -93,12 +93,16 @@ public class userGamesController {
                     }
                 }
             }
-            for(Game game : GameService.games){
-                if(game.getName().equals(g)){
-                    UserService.users.get(i).getGames().remove(game);
-                    UserService.persistUsers();
-                    break;
-                }
+            try{
+                Connection con = ConnectionService.Connect();
+                PreparedStatement remove_game = con.prepareStatement("DELETE FROM owned WHERE owner = ? and name = ?");
+                remove_game.setString(1 , userName);
+                remove_game.setString(2, g);
+                remove_game.executeUpdate();
+                remove_game.close();
+                con.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     };
@@ -117,7 +121,7 @@ public class userGamesController {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
         Parent root = loader.load();
         userWelcomeController uw = loader.getController();
-        uw.setDev(UserService.users.get(i).getUsername());
+        uw.setDev(userName);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);

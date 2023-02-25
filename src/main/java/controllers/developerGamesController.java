@@ -14,16 +14,16 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
-import model.Developer;
-import model.Game;
-import model.User;
-import services.DeveloperService;
-import services.GameService;
-import services.UserService;
+import services.ConnectionService;
+
 
 
 import java.io.IOException;
 import java.net.URL;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.ResourceBundle;
 
 public class developerGamesController implements Initializable {
@@ -37,12 +37,9 @@ public class developerGamesController implements Initializable {
     VBox gameShop;
     @FXML
     Pane warningPane;
-
-    // devName is used to store the name of the logged in developer and i is used to know the place of the developer in the developers.json file
     String devName;
-    int i;
 
-    // Useless ATM used it for some checks and testing
+    // Useless at this moment,  used it for some checks and testing
     @Override
     public void initialize(URL location, ResourceBundle resources){
         warningPane.setVisible(false);
@@ -63,11 +60,7 @@ public class developerGamesController implements Initializable {
         FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
         Parent root = loader.load();
         developerWelcomeController w1 = loader.getController();
-        for(Developer dev : DeveloperService.developers){
-            if(dev.getUsername().equals(devName)){
-                w1.setCurrentDeveloper(dev);
-            }
-        }
+        w1.setCurrentDeveloper(devName);
         Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
         Scene scene = new Scene(root);
         stage.setScene(scene);
@@ -76,23 +69,18 @@ public class developerGamesController implements Initializable {
 
     /*
     Outdated method name DO NOT EDIT.
-    Method reads all games from current developer and creates a button for each of them. After that it appends all elements
-    into a scrollPane. Also adds some minor hover effects for every item.
+    Method reads all games from the database that are developed by the currently logged in developer
+    and creates a button for each of them. After that it appends all elements into a scrollPane.
+    Also adds some minor hover effects for every item.
      */
     public void setDevName(String name){
         devName = name;
         try {
-            GameService.loadgamesfromfile();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        for(Developer dev : DeveloperService.developers){
-            if(dev.getUsername().equals(devName)){
-                break;
-            }
-            i++;
-        }
-        for(Game game : DeveloperService.developers.get(i).getGames()){
+            Connection con = ConnectionService.Connect();
+            PreparedStatement check_games = con.prepareStatement("SELECT name FROM games WHERE developer = ?");
+            check_games.setString(1, devName);
+            ResultSet all_games = check_games.executeQuery();
+            while(all_games.next()){
                 Pane g = new Pane();
                 g.setOnMouseEntered(new EventHandler<MouseEvent>() {
 
@@ -115,58 +103,56 @@ public class developerGamesController implements Initializable {
                 });
                 g.setMinHeight(40);
                 g.setMinWidth(528);
-                Label n = new Label(game.getName());
+                Label n = new Label(all_games.getString(1));
                 n.relocate(10, 12);
                 g.getChildren().add(n);
                 gameShop.getChildren().add(g);
+            }
+            con.close();
+            check_games.close();
+            all_games.close();
+        } catch (Exception e){
+            e.printStackTrace();
         }
     }
 
     /*
-    Method of the button. Upon button click, the method gets the name of the connected game and removes it from the scrollPane,
-    removes it from the list of games, removes it from the developers list of games and removes it from every users list of games
+    Method of the button. Upon button click, the method gets the name of the connected game and removes it from the pane while also
+    removing it from every database
      */
     private EventHandler<ActionEvent> removeGame = new EventHandler<>() {
         public void handle(ActionEvent event) {
-            if(!(DeveloperService.developers.get(i).getOrders().isEmpty())){
-                warningPane.setVisible(true);
-            }
-            else {
-                Pane p = new Pane();
-                String g = "";
-                if (event.getSource() instanceof Button) {
-                    if (((Button) event.getSource()).getParent() instanceof Pane) {
-                        for (Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()) {
-                            if (node instanceof Label) {
-                                g += ((Label) node).getText();
-                                p = (Pane) node.getParent();
-                                gameShop.getChildren().remove(p);
-                                break;
+            try {
+                Connection con = ConnectionService.Connect();
+                Statement delete_game = con.createStatement();
+                Statement verify_orders = con.createStatement();
+                ResultSet orders = verify_orders.executeQuery("SELECT id FROM orders WHERE seller = '" + devName + "'");
+                if (orders.next()) {
+                    warningPane.setVisible(true);
+
+                } else {
+                    Pane p;
+                    String g = "";
+                    if (event.getSource() instanceof Button) {
+                        if (((Button) event.getSource()).getParent() instanceof Pane) {
+                            for (Node node : ((Pane) ((Button) event.getSource()).getParent()).getChildren()) {
+                                if (node instanceof Label) {
+                                    g += ((Label) node).getText();
+                                    p = (Pane) node.getParent();
+                                    gameShop.getChildren().remove(p);
+                                    break;
+                                }
                             }
                         }
                     }
+                    delete_game.executeUpdate("DELETE FROM games WHERE name = '" + g + "'");
+                    delete_game.close();
                 }
-                for (Game game : GameService.games) {
-                    if (game.getName().equals(g)) {
-                        for (User user : UserService.users) {
-                            if (user.getGames().contains(game)) {
-                                user.getGames().remove(game);
-                            }
-                            if (user.getWishlist().contains(game)) {
-                                user.getWishlist().remove(game);
-                            }
-                            if (user.getCart().contains(game)) {
-                                user.getCart().remove(game);
-                            }
-                        }
-                        UserService.persistUsers();
-                        GameService.games.remove(game);
-                        DeveloperService.developers.get(i).getGames().remove(game);
-                        GameService.persistUsers();
-                        DeveloperService.persistUsers();
-                        break;
-                    }
-                }
+                verify_orders.close();
+                orders.close();
+                con.close();
+            } catch (Exception e){
+                e.printStackTrace();
             }
         }
     };

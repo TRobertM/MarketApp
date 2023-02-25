@@ -12,6 +12,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.Statement;
 import java.util.List;
 import java.util.Objects;
 import java.util.ArrayList;
@@ -19,52 +23,74 @@ import java.util.ArrayList;
 
 public class DeveloperService {
 
-    public static List<Developer> developers = new ArrayList<>();
-    private static final Path DEVELOPERS_PATH = FileSystemService.getPathToFile("config", "developers.json");
+/*
+THIS HAS NO USE ANYMORE BUT ITS KEPT HERE AS A POINT OF REFERENCE FOR WHAT WAS DONE BEFORE AND AS A HELPER FOR FUTURE PROJECTS
+ */
 
-    public static boolean addUser(String username, String password) throws UsernameAlreadyExistsException {
-        checkUserDoesNotAlreadyExist(username);
-        UserService.checkUserDoesNotAlreadyExist(username);
-        developers.add(new Developer(username, encodePassword(username, password)));
-        persistUsers();
-        return true;
-    }
-
-    public static boolean loadDevelopersFromFile() throws IOException {
-        if (!Files.exists(DEVELOPERS_PATH)) {
-            FileUtils.copyURLToFile(DeveloperService.class.getClassLoader().getResource("developerz.json"), DEVELOPERS_PATH.toFile());
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-
-        developers = objectMapper.readValue(DEVELOPERS_PATH.toFile(), new TypeReference<>() {
-        });
-        return true;
-    }
-
-    public static void checkUserDoesNotAlreadyExist(String username) throws UsernameAlreadyExistsException {
-        for (Developer developer : developers) {
-            if (Objects.equals(username, developer.getUsername()))
-                throw new UsernameAlreadyExistsException(username);
-        }
-    }
-
-    public static void persistUsers() {
-        try {
-            ObjectMapper objectMapper = new ObjectMapper();
-            objectMapper.writerWithDefaultPrettyPrinter().writeValue(DEVELOPERS_PATH.toFile(), developers);
-        } catch (IOException e) {
-            throw new CouldNotWriteUsersException();
-        }
-    }
+//    public static List<Developer> developers = new ArrayList<>();
+//    private static final Path DEVELOPERS_PATH = FileSystemService.getPathToFile("config", "developers.json");
+//
+//    public static boolean addUser(String username, String password) throws UsernameAlreadyExistsException {
+//        checkUserDoesNotAlreadyExist(username);
+//        UserService.checkUserDoesNotAlreadyExist(username);
+//        developers.add(new Developer(username, encodePassword(username, password)));
+//        persistUsers();
+//        return true;
+//    }
+//
+//    public static boolean loadDevelopersFromFile() throws IOException {
+//        if (!Files.exists(DEVELOPERS_PATH)) {
+//            FileUtils.copyURLToFile(DeveloperService.class.getClassLoader().getResource("developerz.json"), DEVELOPERS_PATH.toFile());
+//        }
+//
+//        ObjectMapper objectMapper = new ObjectMapper();
+//
+//        developers = objectMapper.readValue(DEVELOPERS_PATH.toFile(), new TypeReference<>() {
+//        });
+//        return true;
+//    }
+//
+//    public static void checkUserDoesNotAlreadyExist(String username) throws UsernameAlreadyExistsException {
+//        for (Developer developer : developers) {
+//            if (Objects.equals(username, developer.getUsername()))
+//                throw new UsernameAlreadyExistsException(username);
+//        }
+//    }
+//
+//    public static void persistUsers() {
+//        try {
+//            ObjectMapper objectMapper = new ObjectMapper();
+//            objectMapper.writerWithDefaultPrettyPrinter().writeValue(DEVELOPERS_PATH.toFile(), developers);
+//        } catch (IOException e) {
+//            throw new CouldNotWriteUsersException();
+//        }
+//    }
 
     public static boolean login(String username, String password){
-        for(Developer developer : developers){
-            if(username.equals(developer.getUsername()) && encodePassword(username, password).equals(developer.getPassword())){
-                return true;
+        boolean check = false;
+        try {
+
+            Connection con = ConnectionService.Connect();
+            Statement check_users = con.createStatement();
+            ResultSet users_information = check_users.executeQuery("SELECT username, password, role FROM users");
+
+            while(users_information.next()){
+                if(username.equals(users_information.getString(1))
+                        && encodePassword(username, password).equals(users_information.getString(2))
+                        && users_information.getString(3).equals("Developer")){
+                    check = true;
+                    con.close();
+                    check_users.close();
+                    users_information.close();
+                    return check;
+                } else {
+                    check = false;
+                }
             }
+        } catch (Exception e){
+            e.printStackTrace();
         }
-        return false;
+        return check;
     }
 
     public static String encodePassword(String salt, String password) {
@@ -75,7 +101,7 @@ public class DeveloperService {
 
         // This is the way a password should be encoded when checking the credentials
         return new String(hashedPassword, StandardCharsets.UTF_8)
-                .replace("\"", ""); //to be able to save in JSON format
+                .replace("\u0000", ""); //to be able to save in JSON format
     }
 
     private static MessageDigest getMessageDigest() {
