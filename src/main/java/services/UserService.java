@@ -1,25 +1,12 @@
 package services;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import exception.CouldNotWriteUsersException;
-import exception.UsernameAlreadyExistsException;
-import model.User;
-import org.apache.commons.io.FileUtils;
-
-import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
-import java.util.List;
-import java.util.Objects;
-import java.util.ArrayList;
+
 
 
 public class UserService {
@@ -71,7 +58,7 @@ THIS HAS NO USE ANYMORE BUT ITS KEPT HERE AS A POINT OF REFERENCE FOR WHAT WAS D
         boolean check = false;
         try {
 
-            Connection con = ConnectionService.Connect();
+            Connection con = ConnectionService.getConnection();
             Statement check_users = con.createStatement();
             ResultSet users_information = check_users.executeQuery("SELECT username, password, role FROM users");
 

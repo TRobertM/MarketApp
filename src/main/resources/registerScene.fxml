@@ -35,7 +35,7 @@
             <Text id="errorText" fx:id="errorText" fill="WHITE" layoutX="3.0" layoutY="18.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Text" wrappingWidth="1207.49853515625" />
          </children>
       </Pane>
-      <Button id="toolbarButton" layoutX="1166.0" layoutY="8.0" mnemonicParsing="false" onAction="#closeWindow" text="X" fx:id="xButton" />
+      <Button id="toolbarButton" fx:id="closeButton" layoutX="1166.0" layoutY="8.0" mnemonicParsing="false" onAction="#closeWindow" text="X" />
       <Button id="toolbarButton" fx:id="minimizeButton" layoutX="1139.0" layoutY="5.0" mnemonicParsing="false" onAction="#minimizeWindow" text="_" />
       <Button id="toolbarButton" fx:id="backButton" layoutX="14.0" layoutY="10.0" mnemonicParsing="false" onAction="#backWindow" text="&lt;" />
    </children>

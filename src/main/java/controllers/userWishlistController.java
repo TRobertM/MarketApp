@@ -16,27 +16,23 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import services.ConnectionService;
+import services.DatabaseConnectionService;
+
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
-public class userWishlistController {
+public class userWishlistController extends BaseController {
     @FXML
     VBox gameShop;
-    @FXML
-    Button closeButton;
-    @FXML
-    Button minimizeButton;
-    @FXML
-    Button backButton;
-    String userName;
+
+    String userName = BaseController.getCurrentUser();
 
     public void setUser(String name) {
-        userName = name;
         try{
-            Connection con = ConnectionService.Connect();
+            Connection con = ConnectionService.getConnection();
             PreparedStatement get_cart = con.prepareStatement("SELECT name FROM wishlist WHERE wishlister = ?");
             get_cart.setString(1, userName);
             ResultSet cart_games = get_cart.executeQuery();
@@ -107,7 +103,7 @@ public class userWishlistController {
                 }
             }
             try{
-                Connection con = ConnectionService.Connect();
+                Connection con = ConnectionService.getConnection();
                 PreparedStatement add_cart = con.prepareStatement("INSERT INTO user_cart VALUES (?,?)");
                 add_cart.setString(1 , g);
                 add_cart.setString(2 , userName);
@@ -143,7 +139,7 @@ public class userWishlistController {
                 }
             }
             try{
-                Connection con = ConnectionService.Connect();
+                Connection con = ConnectionService.getConnection();
                 PreparedStatement remove_cart = con.prepareStatement("DELETE FROM wishlist WHERE wishlister = ? and name = ?");
                 remove_cart.setString(1 , userName);
                 remove_cart.setString(2 , g);
@@ -155,26 +151,5 @@ public class userWishlistController {
             }
         }
     };
-
-    public void closeWindow(){
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
-    }
-
-    public void minimizeWindow(){
-        Stage stage = (Stage) minimizeButton.getScene().getWindow();
-        stage.setIconified(true);
-    }
-
-    public void goBack(ActionEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
-        Parent root = loader.load();
-        userWelcomeController uw = loader.getController();
-        uw.setDev(userName);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
-    }
 
 }

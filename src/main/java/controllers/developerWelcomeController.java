@@ -14,21 +14,17 @@ import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 import javafx.stage.Stage;
 import services.ConnectionService;
+import services.DatabaseDataService;
+import services.FXMLChangerService;
 
+import javax.xml.crypto.Data;
 import java.io.IOException;
 import java.net.URL;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import java.sql.*;
 import java.util.ResourceBundle;
 
-public class developerWelcomeController implements Initializable {
+public class developerWelcomeController extends BaseController implements Initializable {
 
-    @FXML
-    Button xButton;
-    @FXML
-    Button minimizeButton;
     @FXML
     Label welcomeLabel;
     @FXML
@@ -43,92 +39,39 @@ public class developerWelcomeController implements Initializable {
     Button logoutButton;
     @FXML
     Pane notificationPane;
-    String currentDeveloper;
 
-    // Again no use as of right now but DO NOT TOUCH
     @Override
     public void initialize(URL location, ResourceBundle resources) {
-    }
-
-    // Check if the current developer has any orders pending in the database and displays a notification
-    public void setCurrentDeveloper(String developer){
-        currentDeveloper = developer;
-        welcomeLabel.setText("Welcome, " + currentDeveloper);
-        int totalOrders = 0;
+        welcomeLabel.setText("Welcome, " + this.getCurrentUser());
         try {
-            Connection con = ConnectionService.Connect();
-            PreparedStatement check_orders = con.prepareStatement("SELECT id FROM orders WHERE seller = ?");
-            check_orders.setString(1 , currentDeveloper);
-            ResultSet orders_information = check_orders.executeQuery();
-            while(orders_information.next()){
-                totalOrders++;
+            int orders = DatabaseDataService.retrieveNumberOfOrders(BaseController.getCurrentUser());
+            if(DatabaseDataService.retrieveNumberOfOrders(BaseController.getCurrentUser()) != 0){
+                Button notificationButton = new Button(String.valueOf(orders));
+                notificationButton.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);-fx-background-radius: 50px; -fx-text-fill: white");
+                notificationPane.getChildren().add(notificationButton);
             }
-            con.close();
-            check_orders.close();
-        } catch (Exception e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
-        if(totalOrders != 0){
-            Button notificationButton = new Button(String.valueOf(totalOrders));
-            notificationButton.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);-fx-background-radius: 50px; -fx-text-fill: white");
-            notificationPane.getChildren().add(notificationButton);
-        }
-    }
-
-    public void closeWindow(){
-        Stage stage = (Stage) xButton.getScene().getWindow();
-        stage.close();
-    }
-
-    public void minimizeWindow(){
-        Stage stage = (Stage) minimizeButton.getScene().getWindow();
-        stage.setIconified(true);
     }
 
     // Works as a logout button
     @FXML
     public void goBack() throws IOException {
-        Parent root = FXMLLoader.load((getClass().getClassLoader().getResource("scene.fxml")));
-        Stage stage = (Stage)logoutButton.getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
+        FXMLChangerService.changeScene("scene.fxml", logoutButton);
     }
 
     // Changes window to developer library window
     public void goToGames(MouseEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerGames.fxml"));
-        Parent root = loader.load();
-        developerGamesController w1 = loader.getController();
-        w1.setDevName(currentDeveloper);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
+        FXMLChangerService.changeSceneWithData("developerGames.fxml", myGames, this.getCurrentUser());
     }
 
     public void addGame(MouseEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerAdd.fxml"));
-        Parent root = loader.load();
-        developerAddController a1 = loader.getController();
-        a1.setDev(currentDeveloper);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.show();
+        FXMLChangerService.changeScene("developerAdd.fxml", addGame);
     }
 
     public void goToOrders(MouseEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerOrders.fxml"));
-        Parent root = loader.load();
-        developerOrdersController a2 = loader.getController();
-        a2.setDev(currentDeveloper);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
-        stage.show();
+        FXMLChangerService.changeScene("developerOrders.fxml", myOrders);
     }
 
     // Everything below this is implemented only for design purposes

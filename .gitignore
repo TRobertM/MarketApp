@@ -6,3 +6,4 @@ build
 *.iml
 .idea
 target
+googleCloudAuth.json

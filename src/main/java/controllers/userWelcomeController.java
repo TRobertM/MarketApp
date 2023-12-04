@@ -2,19 +2,20 @@ package controllers;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
-import javafx.stage.Stage;
-import java.io.IOException;
+import services.FXMLChangerService;
 
-public class userWelcomeController {
+import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
+
+public class userWelcomeController extends BaseController implements Initializable {
     @FXML
     TextFlow gamesLibrary;
     @FXML
@@ -24,79 +25,37 @@ public class userWelcomeController {
     @FXML
     Button logoutButton;
     @FXML
-    Button closeButton;
-    @FXML
-    Button minimizeButton;
-    @FXML
     Label welcomeLabel;
-    String currentUser;
+
+    String currentUser = BaseController.getCurrentUser();
+
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
+        welcomeLabel.setText("Welcome, " + currentUser);
+    }
 
     public void logoutUser(ActionEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("scene.fxml"));
-        Parent root = loader.load();
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
-    }
-
-    public void closeWindow(){
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
-    }
-
-    public void minimizeWindow(){
-        Stage stage = (Stage) minimizeButton.getScene().getWindow();
-        stage.setIconified(true);
+        FXMLChangerService.changeScene("scene.fxml", (Node) e.getSource());
     }
 
     public void setDev(String name){
-        welcomeLabel.setText("Welcome, " + name);
-        currentUser = name;
+        welcomeLabel.setText("Welcome, " + currentUser);
     }
 
     public void goToLibrary(MouseEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userLibrary.fxml"));
-        Parent root = loader.load();
-        userLibraryController u1 = loader.getController();
-        u1.setUser(currentUser);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
+        FXMLChangerService.changeSceneWithData("userLibrary.fxml", gamesLibrary, currentUser);
     }
 
     public void goToWishlist(MouseEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWishlist.fxml"));
-        Parent root = loader.load();
-        userWishlistController uw = loader.getController();
-        uw.setUser(currentUser);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
+        FXMLChangerService.changeSceneWithData("userWishlist.fxml", myWishlist, currentUser);
     }
 
     public void goToGames(MouseEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userGames.fxml"));
-        Parent root = loader.load();
-        userGamesController ug = loader.getController();
-        ug.setUser(currentUser);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
+        FXMLChangerService.changeSceneWithData("userGames.fxml", myGames, currentUser);
     }
 
     public void goToCart(MouseEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userCart.fxml"));
-        Parent root = loader.load();
-        userCartController uc = loader.getController();
-        uc.setUser(currentUser);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
+        FXMLChangerService.changeSceneWithData("userCart.fxml", myGames, currentUser);
     }
 
     // ------------------------------------------------- Everything below this is implemented only for design purposes -----------------------------------------------------

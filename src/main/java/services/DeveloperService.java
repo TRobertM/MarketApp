@@ -69,8 +69,7 @@ THIS HAS NO USE ANYMORE BUT ITS KEPT HERE AS A POINT OF REFERENCE FOR WHAT WAS D
     public static boolean login(String username, String password){
         boolean check = false;
         try {
-
-            Connection con = ConnectionService.Connect();
+            Connection con = ConnectionService.getConnection();
             Statement check_users = con.createStatement();
             ResultSet users_information = check_users.executeQuery("SELECT username, password, role FROM users");
 
@@ -90,6 +89,7 @@ THIS HAS NO USE ANYMORE BUT ITS KEPT HERE AS A POINT OF REFERENCE FOR WHAT WAS D
         } catch (Exception e){
             e.printStackTrace();
         }
+
         return check;
     }
 

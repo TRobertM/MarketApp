@@ -21,6 +21,6 @@
             <VBox fx:id="gameShop" prefHeight="349.0" prefWidth="637.0" />
          </content>
       </ScrollPane>
-      <Button id="toolbarButton" fx:id="goBackButton" layoutX="13.0" layoutY="13.0" mnemonicParsing="false" onAction="#goBack" text="&lt;" />
+      <Button id="toolbarButton" fx:id="backButton" layoutX="13.0" layoutY="13.0" mnemonicParsing="false" onAction="#goBack" text="&lt;" />
    </children>
 </AnchorPane>

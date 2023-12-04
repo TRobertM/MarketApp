@@ -13,7 +13,7 @@
 <AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="251.0" prefWidth="492.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.developerAddController">
    <children>
       <TextField fx:id="gameNameLabel" layoutX="513.0" layoutY="345.0" />
-      <Button id="toolbarButton" fx:id="goBackButton" layoutX="13.0" layoutY="13.0" mnemonicParsing="false" onAction="#goBack" text="&lt;" />
+      <Button id="toolbarButton" fx:id="backButton" layoutX="13.0" layoutY="13.0" mnemonicParsing="false" onAction="#goBack" text="&lt;" />
       <ImageView fitHeight="14.0" fitWidth="117.0" layoutX="11.0" layoutY="676.0" pickOnBounds="true" preserveRatio="true">
          <image>
             <Image url="@devaccount.png" />

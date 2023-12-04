@@ -14,7 +14,7 @@
    <children>
       <Button id="toolbarButton" fx:id="closeButton" layoutX="1166.0" layoutY="8.0" mnemonicParsing="false" onAction="#closeWindow" text="X" />
       <Button id="toolbarButton" fx:id="minimizeButton" layoutX="1139.0" layoutY="6.0" mnemonicParsing="false" onAction="#minimizeWindow" text="_" />
-      <Button id="toolbarButton" fx:id="backButton" layoutX="13.0" layoutY="13.0" mnemonicParsing="false" onAction="#backWindow" text="&lt;" />
+      <Button id="toolbarButton" fx:id="backButton" layoutX="13.0" layoutY="13.0" mnemonicParsing="false" onAction="#goBack" text="&lt;" />
       <ScrollPane fx:id="megaPane" layoutX="285.0" layoutY="265.0" prefHeight="352.0" prefWidth="653.0" visible="false">
          <content>
             <VBox fx:id="myGames" prefHeight="349.0" prefWidth="637.0" />

@@ -1,12 +1,8 @@
 package controllers;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
@@ -14,18 +10,16 @@ import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
-import services.DeveloperService;
-import services.UserService;
-
+import services.AuthenticationService;
+import services.FXMLChangerService;
 import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.net.URL;
+import java.sql.SQLException;
 import java.util.ResourceBundle;
-
 import static javafx.scene.effect.BlurType.GAUSSIAN;
 
-public class Controller implements Initializable {
+public class Controller extends BaseController implements Initializable {
 
     @FXML
     PasswordField passwordField;
@@ -37,12 +31,6 @@ public class Controller implements Initializable {
     Text errorText;
     @FXML
     Label goRegisterButton;
-    @FXML
-    Button xButton;
-    @FXML
-    Button minimizeButton;
-
-
 
     @Override
     // Initialize some added effects on the elements
@@ -60,7 +48,7 @@ public class Controller implements Initializable {
 
 
     // Login method
-    public void login(ActionEvent e) throws IOException {
+    public void login(ActionEvent e) throws IOException, SQLException {
         // Check if the fields are empty
         if (usernameField.getText().trim().isEmpty() || passwordField.getText().trim().isEmpty()) {
             errorText.setText("Please fill everything before trying to log in");
@@ -68,30 +56,15 @@ public class Controller implements Initializable {
             throw new IOException();
         }
 
+        String role = AuthenticationService.checkCredentials(usernameField.getText(), passwordField.getText());
         // Customer login
-        if (UserService.login(usernameField.getText(), passwordField.getText())) {
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
-            Parent root = loader.load();
-            userWelcomeController userWelcome = loader.getController();
-            userWelcome.setDev(usernameField.getText());
-            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setResizable(false);
+        if (role.equals("Customer")) {
+            FXMLChangerService.changeSceneWithData("userWelcome.fxml", (Node) e.getSource(), usernameField.getText());
         }
-
         // Developer login
-        else if(DeveloperService.login(usernameField.getText(), passwordField.getText())){
-            FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("developerWelcome.fxml"));
-            Parent root = loader.load();
-            developerWelcomeController w1 = loader.getController();
-            w1.setCurrentDeveloper(usernameField.getText());
-            Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-            Scene scene = new Scene(root);
-            stage.setScene(scene);
-            stage.setResizable(false);
+        else if(role.equals("Developer")){
+            FXMLChangerService.changeSceneWithData("developerWelcome.fxml", (Node) e.getSource(), usernameField.getText());
         }
-
         // Error if the user is not found in the database
         else {
             errorText.setText("Wrong username or password");
@@ -99,26 +72,9 @@ public class Controller implements Initializable {
         }
     }
 
-
     // Changes tab to register
     @FXML
     public void goToRegister() throws IOException {
-        Parent root = FXMLLoader.load((getClass().getClassLoader().getResource("registerScene.fxml")));
-        Stage stage = (Stage)goRegisterButton.getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
-    }
-
-    // Closes window
-    public void closeWindow(){
-        Stage stage = (Stage) xButton.getScene().getWindow();
-        stage.close();
-    }
-
-    // Minimize window
-    public void minimizeWindow(){
-        Stage stage = (Stage) minimizeButton.getScene().getWindow();
-        stage.setIconified(true);
+        FXMLChangerService.changeScene("registerScene.fxml", goRegisterButton );
     }
 }

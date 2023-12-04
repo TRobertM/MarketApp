@@ -1,12 +1,11 @@
-import javafx.event.EventHandler;
 import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.StageStyle;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import services.DatabaseConnectionService;
 
 public class Main extends Application{
     private double xOffset = 0;
@@ -18,23 +17,19 @@ public class Main extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
+        DatabaseConnectionService.initializeConnectionPool();
+
         Parent root = FXMLLoader.load(getClass().getResource("scene.fxml"));
         String css = this.getClass().getResource("styles.css").toExternalForm();
         Scene scene = new Scene(root, 1200, 700);
         scene.getStylesheets().add(css);
-        root.setOnMousePressed(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                xOffset = event.getSceneX();
-                yOffset = event.getSceneY();
-            }
+        root.setOnMousePressed(event -> {
+            xOffset = event.getSceneX();
+            yOffset = event.getSceneY();
         });
-        root.setOnMouseDragged(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                stage.setX(event.getScreenX() - xOffset);
-                stage.setY(event.getScreenY() - yOffset);
-            }
+        root.setOnMouseDragged(event -> {
+            stage.setX(event.getScreenX() - xOffset);
+            stage.setY(event.getScreenY() - yOffset);
         });
         stage.setResizable(false);
         stage.setTitle("JavaFX and Gradle");
@@ -42,5 +37,6 @@ public class Main extends Application{
         stage.setScene(scene);
         stage.getIcons().add(new Image("logo.png"));
         stage.show();
+
     }
 }

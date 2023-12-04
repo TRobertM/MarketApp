@@ -3,41 +3,30 @@ package controllers;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import services.ConnectionService;
-
-import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.util.ResourceBundle;
 
-public class userGamesController {
-    @FXML
-    Button closeButton;
-    @FXML
-    Button minimizeButton;
-    @FXML
-    Button backButton;
+public class userGamesController extends BaseController implements Initializable {
     @FXML
     VBox myGames;
 
-    String userName;
+    String userName = BaseController.getCurrentUser();
 
-
-    public void setUser(String name){
-        userName = name;
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         try{
-            Connection con = ConnectionService.Connect();
+            Connection con = ConnectionService.getConnection();
             PreparedStatement get_games = con.prepareStatement("SELECT name FROM owned WHERE owner = ?");
             get_games.setString(1 , userName);
             ResultSet user_games = get_games.executeQuery();
@@ -94,7 +83,7 @@ public class userGamesController {
                 }
             }
             try{
-                Connection con = ConnectionService.Connect();
+                Connection con = ConnectionService.getConnection();
                 PreparedStatement remove_game = con.prepareStatement("DELETE FROM owned WHERE owner = ? and name = ?");
                 remove_game.setString(1 , userName);
                 remove_game.setString(2, g);
@@ -106,25 +95,4 @@ public class userGamesController {
             }
         }
     };
-
-    public void closeWindow(){
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
-    }
-
-    public void minimizeWindow(){
-        Stage stage = (Stage) minimizeButton.getScene().getWindow();
-        stage.setIconified(true);
-    }
-
-    public void goBack(ActionEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
-        Parent root = loader.load();
-        userWelcomeController uw = loader.getController();
-        uw.setDev(userName);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
-    }
 }

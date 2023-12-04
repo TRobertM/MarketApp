@@ -2,28 +2,36 @@ package services;
 
 import controllers.developerAddController;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 //Reads information from config.properties to create connections to the database
 public class ConnectionService {
-    static Connection connection;
+    private static Connection connection;
 
-    public static Connection Connect(){
-        try{
-            InputStream input = developerAddController.class.getClassLoader().getResourceAsStream("config.properties");
-            Properties prop = new Properties();
-            if (input == null){
-                System.out.println("Sorry");
-            }
-            prop.load(input);
-            connection = DriverManager.getConnection(prop.getProperty("url"),prop.getProperty("user"),prop.getProperty("password"));
-            return connection;
-        } catch (Exception e){
-            e.printStackTrace();
+    public static Connection getConnection() throws SQLException, IOException {
+        if (connection == null || connection.isClosed()) {
+            connect();
         }
-        return null;
+        return connection;
+    }
+
+    private static void connect() throws SQLException, IOException {
+        InputStream input = developerAddController.class.getClassLoader().getResourceAsStream("config.properties");
+        if(input == null){
+            throw new IllegalArgumentException("No config.properties found");
+        }
+
+        Properties prop = new Properties();
+        prop.load(input);
+
+        String url = prop.getProperty("url");
+        String user = prop.getProperty("user");
+        String password = prop.getProperty("password");
+        connection = DriverManager.getConnection(url, user, password);
     }
 }

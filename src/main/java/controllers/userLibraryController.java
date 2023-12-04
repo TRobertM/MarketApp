@@ -1,12 +1,11 @@
 package controllers;
 
+import com.fasterxml.jackson.databind.ser.Serializers;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
@@ -14,41 +13,30 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
-import javafx.stage.Stage;
 import services.ConnectionService;
-import java.io.IOException;
+import services.DatabaseDataService;
+
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
+import java.util.ResourceBundle;
 
-public class userLibraryController {
-    @FXML
-    Button closeButton;
-    @FXML
-    Button minimizeButton;
+public class userLibraryController extends BaseController implements Initializable {
     @FXML
     VBox gameShop;
-    @FXML
-    Button goBackButton;
 
-    String userName;
+    String userName = BaseController.getCurrentUser();
 
-    public void closeWindow(){
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
-    }
-
-    public void minimizeWindow(){
-        Stage stage = (Stage) minimizeButton.getScene().getWindow();
-        stage.setIconified(true);
-    }
-
-    public void setUser(String name) {
-        userName = name;
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         try {
-            Connection con = ConnectionService.Connect();
-            PreparedStatement get_games = con.prepareStatement("SELECT name FROM games WHERE name NOT IN(SELECT name FROM owned WHERE owner = ? UNION SELECT game_name FROM user_cart WHERE user_name = ? UNION SELECT name FROM wishlist WHERE wishlister = ? UNION SELECT game FROM orders WHERE buyer = ?)");
+            Connection con = ConnectionService.getConnection();
+            PreparedStatement get_games = con.prepareStatement("SELECT name FROM games WHERE name " +
+                    "NOT IN(SELECT name FROM owned WHERE owner = ? " +
+                    "UNION SELECT game_name FROM user_cart WHERE user_name = ? " +
+                    "UNION SELECT name FROM wishlist WHERE wishlister = ? " +
+                    "UNION SELECT game FROM orders WHERE buyer = ?)");
             get_games.setString(1, userName);
             get_games.setString(2, userName);
             get_games.setString(3, userName);
@@ -124,21 +112,23 @@ public class userLibraryController {
                 }
             }
             try{
-                Connection con = ConnectionService.Connect();
-                PreparedStatement wishlist_game = con.prepareStatement("SELECT name,developer FROM games WHERE name = ?");
-                PreparedStatement insert_wishlist = con.prepareStatement("INSERT INTO wishlist (name,developer,wishlister) VALUES (?,?,?)");
-                wishlist_game.setString(1 , g);
-                ResultSet game_information = wishlist_game.executeQuery();
-                if(game_information.next()){
-                    insert_wishlist.setString(1 , game_information.getString(1));
-                    insert_wishlist.setString(2, game_information.getString(2));
-                    insert_wishlist.setString(3, userName);
-                    insert_wishlist.executeUpdate();
-                }
-                insert_wishlist.close();
-                game_information.close();
-                wishlist_game.close();
-                con.close();
+//                Connection con = ConnectionService.getConnection();
+//                PreparedStatement wishlist_game = con.prepareStatement("SELECT name,developer FROM games WHERE name = ?");
+//                PreparedStatement insert_wishlist = con.prepareStatement("INSERT INTO wishlist (name,developer,wishlister) VALUES (?,?,?)");
+//                wishlist_game.setString(1 , g);
+//                ResultSet game_information = wishlist_game.executeQuery();
+//                if(game_information.next()){
+//                    insert_wishlist.setString(1 , game_information.getString(1));
+//                    insert_wishlist.setString(2, game_information.getString(2));
+//                    insert_wishlist.setString(3, userName);
+//                    insert_wishlist.executeUpdate();
+//                }
+//                insert_wishlist.close();
+//                game_information.close();
+//                wishlist_game.close();
+//                con.close();
+                String developer = DatabaseDataService.retrieveDeveloper(g);
+                DatabaseDataService.addToWishlist(g, developer, BaseController.getCurrentUser());
             } catch (Exception e){
                 e.printStackTrace();
             }
@@ -162,7 +152,7 @@ public class userLibraryController {
                 }
             }
             try{
-                Connection con = ConnectionService.Connect();
+                Connection con = ConnectionService.getConnection();
                 PreparedStatement cart_game = con.prepareStatement("SELECT name FROM games WHERE name = ?");
                 PreparedStatement add_cart = con.prepareStatement("INSERT INTO user_cart (game_name,User_name) VALUES (?,?)");
                 cart_game.setString(1, g);
@@ -181,15 +171,4 @@ public class userLibraryController {
             }
         }
     };
-
-    public void goBack(ActionEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
-        Parent root = loader.load();
-        userWelcomeController uw = loader.getController();
-        uw.setDev(userName);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
-    }
 }

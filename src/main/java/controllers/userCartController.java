@@ -3,10 +3,8 @@ package controllers;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.Node;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
@@ -14,21 +12,13 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.Text;
-import javafx.stage.Stage;
 import services.ConnectionService;
-import java.io.IOException;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.Statement;
+import services.DatabaseDataService;
+import java.net.URL;
+import java.sql.*;
+import java.util.ResourceBundle;
 
-public class userCartController {
-    @FXML
-    Button closeButton;
-    @FXML
-    Button minimizeButton;
-    @FXML
-    Button backButton;
+public class userCartController extends BaseController implements Initializable {
     @FXML
     VBox myGames;
     @FXML
@@ -37,16 +27,16 @@ public class userCartController {
     Text textPane;
     @FXML
     ScrollPane megaPane;
-    String userName;
+    String userName = this.getCurrentUser();
 
-    public void setUser(String name){
-        userName = name;
+    @Override
+    public void initialize(URL location, ResourceBundle resources) {
         try{
-            Connection con = ConnectionService.Connect();
+            Connection con = ConnectionService.getConnection();
             PreparedStatement get_cart = con.prepareStatement("SELECT game_name FROM user_cart WHERE user_name = ?");
             get_cart.setString(1 , userName);
             ResultSet cart_games = get_cart.executeQuery();
-            if(cart_games.next() == false){
+            if(!cart_games.next()){
                 textPane.setText("Your cart is empty!");
                 textPane.setStyle("-fx-text-fill: white");
                 successPane.setVisible(true);
@@ -55,14 +45,16 @@ public class userCartController {
                 successPane.setVisible(false);
                 megaPane.setVisible(true);
                 do{
+                    String gameName = cart_games.getString(1);
                     Pane g = new Pane();
                     g.setOnMouseEntered(new EventHandler<MouseEvent>() {
-
                         @Override
-                        public void handle(MouseEvent t) {
+                        public void handle(MouseEvent onClick) {
                             g.setStyle("-fx-background-color:#160e36;");
                             Button b = new Button("X");
-                            b.setOnAction(removeCart);
+                            b.setOnAction(event -> {
+                                DatabaseDataService.removeFromCart(gameName, userName);
+                            });
                             b.setStyle("-fx-background-color: linear-gradient(to right bottom, #c33a9a, #d74d54);");
                             b.relocate(590, 8.5);
                             g.getChildren().add(b);
@@ -89,6 +81,7 @@ public class userCartController {
         }
     }
 
+    @FXML
     private EventHandler<ActionEvent> removeCart = new EventHandler<>() {
         public void handle(ActionEvent event) {
             Pane p;
@@ -106,7 +99,7 @@ public class userCartController {
                 }
             }
             try{
-                Connection con = ConnectionService.Connect();
+                Connection con = ConnectionService.getConnection();
                 PreparedStatement remove_cart = con.prepareStatement("DELETE FROM user_cart WHERE game_name = ? and user_name = ?");
                 remove_cart.setString(1 , g);
                 remove_cart.setString(2, userName);
@@ -122,7 +115,7 @@ public class userCartController {
     public void sendOrder(){
         try{
             int ID = 0;
-            Connection con = ConnectionService.Connect();
+            Connection con = ConnectionService.getConnection();
             Statement send_orders = con.createStatement();
             PreparedStatement delete_game = con.prepareStatement("DELETE FROM user_cart WHERE game_name = ? and user_name = ?");
             PreparedStatement add_order = con.prepareStatement("INSERT INTO orders VALUES(?,?,?,?)");
@@ -168,26 +161,5 @@ public class userCartController {
         textPane.setStyle("-fx-text-fill: white");
         successPane.setVisible(true);
         megaPane.setVisible(false);
-    }
-
-    public void closeWindow(){
-        Stage stage = (Stage) closeButton.getScene().getWindow();
-        stage.close();
-    }
-
-    public void minimizeWindow(){
-        Stage stage = (Stage) minimizeButton.getScene().getWindow();
-        stage.setIconified(true);
-    }
-
-    public void backWindow(ActionEvent e) throws IOException {
-        FXMLLoader loader = new FXMLLoader(getClass().getClassLoader().getResource("userWelcome.fxml"));
-        Parent root = loader.load();
-        userWelcomeController uw = loader.getController();
-        uw.setDev(userName);
-        Stage stage = (Stage) ((Node) e.getSource()).getScene().getWindow();
-        Scene scene = new Scene(root);
-        stage.setScene(scene);
-        stage.setResizable(false);
     }
 }

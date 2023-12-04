@@ -12,7 +12,7 @@
 
 <AnchorPane fx:id="avatarPane" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="700.0" prefWidth="1200.0" stylesheets="@styles.css" xmlns="http://javafx.com/javafx/18" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.developerWelcomeController">
    <children>
-      <Button id="toolbarButton" layoutX="1166.0" layoutY="8.0" mnemonicParsing="false" onAction="#closeWindow" text="X" fx:id="xButton" />
+      <Button id="toolbarButton" fx:id="closeButton" layoutX="1166.0" layoutY="8.0" mnemonicParsing="false" onAction="#closeWindow" text="X" />
       <Button id="toolbarButton" fx:id="minimizeButton" layoutX="1139.0" layoutY="5.0" mnemonicParsing="false" onAction="#minimizeWindow" text="_" />
       <Label id="welcomeLabel" fx:id="welcomeLabel" layoutX="-3.0" layoutY="237.0" prefHeight="17.0" prefWidth="1206.0" text="Label" textFill="WHITE">
          <font>
